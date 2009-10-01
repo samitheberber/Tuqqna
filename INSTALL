@@ -1,0 +1,7 @@
+Requirements
+
+    Python 2.5 or later.
+
+Installation
+
+    python setup.py install
