@@ -1,2 +1,5 @@
 *.swp
 *~
+document.aux
+document.log
+document.toc
