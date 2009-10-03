@@ -10,6 +10,7 @@ import unittest
 from tuqqna.core.board import Board
 from tuqqna.core.player import Player
 from tuqqna.core.errors.game import GameNotStartedError
+from tuqqna.core.errors.board import NoMoreSlotsInBoard
 
 
 class TestBoardConstruction(unittest.TestCase):
@@ -130,6 +131,111 @@ class TestBoardOnTurnOfPlayer(unittest.TestCase):
         self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
 
 
+class TestBoardOnFillButtons(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board(7, 6)
+        self.board.setPlayer1(Player("Player 1"))
+        self.board.setPlayer2(Player("Player 2"))
+
+    def test_first_button_falls_on_bottom(self):
+        self.board.drop(0)
+        boardString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+|O| | | | | | |
+---------------
+"""
+        self.assertEquals(str(self.board), boardString)
+
+    def test_second_button_falls_on_top_of_first_one(self):
+        self.board.drop(0)
+        self.board.drop(0)
+        boardString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+"""
+        self.assertEquals(str(self.board), boardString)
+
+    def test_drop_buttons_until_no_slots_in_column(self):
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        boardString = """\
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+"""
+        self.assertEquals(str(self.board), boardString)
+
+    def test_drop_buttons_over_the_slots_in_column(self):
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.board.drop(0)
+        self.assertRaises(NoMoreSlotsInBoard, self.board.drop, 0)
+
+    def test_drop_buttons_in_every_column(self):
+        self.board.drop(0)
+        self.board.drop(1)
+        self.board.drop(2)
+        self.board.drop(3)
+        self.board.drop(4)
+        self.board.drop(5)
+        self.board.drop(6)
+        boardString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+|O|X|O|X|O|X|O|
+---------------
+"""
+        self.assertEquals(str(self.board), boardString)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
@@ -137,4 +243,5 @@ def suite():
     suite.addTest(unittest.makeSuite(TestBoardIsReady))
     suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
     suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
+    suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
     return suite
