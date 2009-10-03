@@ -1,5 +1,6 @@
 *.swp
 *~
+*.pyc
 document.aux
 document.log
 document.toc
