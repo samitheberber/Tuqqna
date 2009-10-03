@@ -18,6 +18,9 @@ class TestPlayerCreation(unittest.TestCase):
     def test_player_name(self):
         self.assertEquals(self.player.getName(), "Player 1")
 
+    def test_player_string_transform_returns_name(self):
+        self.assertEquals(str(self.player), "Player 1")
+
     def test_player_victories_are_0_at_beginning(self):
         self.assertEquals(self.player.getVictories(), 0)
 

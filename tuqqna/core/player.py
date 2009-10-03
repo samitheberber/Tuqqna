@@ -26,3 +26,6 @@ class Player(object):
 
     def defeats(self):
         self._defeats += 1
+
+    def __str__(self):
+        return self._name
