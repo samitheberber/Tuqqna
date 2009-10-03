@@ -5,7 +5,7 @@ tuqqna.tests.core-package init file. This file contains all core test suites.
 """
 
 
-import TestBoard
+from tuqqna.tests.core import TestBoard
 
 
 def suites():

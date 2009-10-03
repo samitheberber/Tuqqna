@@ -7,13 +7,40 @@ Test Board tests all board relevant matters.
 
 import unittest
 
+from tuqqna.core.board import Board
 
-class TestBoard(unittest.TestCase):
 
-    pass
+class TestBoardConstruction(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board(7, 6)
+
+    def test_board_width(self):
+        self.assertEquals(self.board.getWidth(), 7)
+
+    def test_board_height(self):
+        self.assertEquals(self.board.getHeight(), 6)
+
+    def test_board_string_format(self):
+        boardString = ""\
+                      "---------------\n"\
+                      "| | | | | | | |\n"\
+                      "---------------\n"\
+                      "| | | | | | | |\n"\
+                      "---------------\n"\
+                      "| | | | | | | |\n"\
+                      "---------------\n"\
+                      "| | | | | | | |\n"\
+                      "---------------\n"\
+                      "| | | | | | | |\n"\
+                      "---------------\n"\
+                      "| | | | | | | |\n"\
+                      "---------------\n"
+        self.assertEquals(str(self.board), boardString)
+
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestBoard))
+    suite.addTest(unittest.makeSuite(TestBoardConstruction))
     return suite
