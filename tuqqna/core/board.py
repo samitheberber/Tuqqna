@@ -5,6 +5,7 @@ Game board module.
 """
 
 from tuqqna.core.player import Player
+from tuqqna.core.button import Button
 from tuqqna.core.errors.game import GameNotStartedError
 
 
@@ -15,6 +16,8 @@ class Board(object):
         self._height = height
         self._player1 = None
         self._player2 = None
+        self._player1Drops = []
+        self._player2Drops = []
         self._lastSlot = None
 
     def getWidth(self):
@@ -63,6 +66,17 @@ class Board(object):
         elif slot < 0 or slot > self._width:
             raise ValueError
         self._lastSlot = slot
+        button = Button(0, 0)
+        if self.playerInTurn() == self._player1:
+            self._player1Drops.append(button)
+        else:
+            self._player2Drops.append(button)
 
     def lastSlotWhereDropped(self):
         return self._lastSlot
+
+    def playerInTurn(self):
+        if len(self._player1Drops) == len(self._player2Drops):
+            return self._player1
+        else:
+            return self._player2

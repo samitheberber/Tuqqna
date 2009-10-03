@@ -110,10 +110,31 @@ class TestBoardOnButtonDrop(unittest.TestCase):
         self.assertEquals(self.board.lastSlotWhereDropped(), None)
 
 
+class TestBoardOnTurnOfPlayer(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board(7, 6)
+        self.board.setPlayer1(Player("Player 1"))
+        self.board.setPlayer2(Player("Player 2"))
+
+    def test_player1_starts(self):
+        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
+
+    def test_player2_is_after_player1(self):
+        self.board.drop(0)
+        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer2())
+
+    def test_player1_is_after_player2(self):
+        self.board.drop(0)
+        self.board.drop(0)
+        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
     suite.addTest(unittest.makeSuite(TestBoardPlayerAssign))
     suite.addTest(unittest.makeSuite(TestBoardIsReady))
     suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
+    suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
     return suite
