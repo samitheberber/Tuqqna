@@ -15,7 +15,12 @@ Installing
 Unit Tests
 ==========
 
-    Coming later.
+    Unit tests can be easily run from ./tuqqna/unittests.py
+
+    These tests are very important, because the whole project is going to be
+    developed with TDD (Test Driven Development). All public functionality will
+    be tested before they are created. This also provides the design quality
+    with refactoring.
 
 
 Documentation and Support

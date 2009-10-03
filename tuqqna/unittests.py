@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
+"""\
+Unittests-file contains all information to launch unit test framework.
+
+To run tests, just run this file and you will see the result of tests.
+"""
+
+
 import unittest
+
 import tests
 
-def getTestSuites():
-    suite = unittest.TestSuite()
-    for testsuite in tests.getTestSuites():
-        suite.addTest(testsuite)
-    return suite
 
 if __name__ == "__main__":
-    #unittest.main()
-    unittest.TextTestRunner(verbosity=2).run(getTestSuites())
+    unittest.TextTestRunner(verbosity=2).run(tests.getTestSuites())
