@@ -22,6 +22,6 @@ Returns all test suites of core-package.
     suites.append(TestBoard.suite()) # Appends suites with TestBoard-suite.
     suites.append(TestButton.suite()) # Appends suites with TestButton-suite.
     suites.append(TestPlayer.suite()) # Appends suites with TestPlayer-suite.
-    suites.append(TestRules.suite()) # Appends suites with TestPlayer-suite.
+    suites.append(TestRules.suite()) # Appends suites with TestRules-suite.
 
     return suites
