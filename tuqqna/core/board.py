@@ -6,7 +6,11 @@ Game board module.
 
 from tuqqna.core.player import Player
 from tuqqna.core.button import Button
+from tuqqna.core.rules import Rules
 from tuqqna.core.errors.game import GameNotStartedError
+from tuqqna.core.errors.game import GameHasBeenEnded
+from tuqqna.core.errors.game import Player1Wins
+from tuqqna.core.errors.game import Player2Wins
 from tuqqna.core.errors.board import NoMoreSlotsInBoard
 
 
@@ -43,18 +47,32 @@ class Board(object):
     def getPlayer2(self):
         return self._player2
 
-    def drop(self, slot):
+    def drop(self, column):
         if not isinstance(self._player1, Player)\
            or not isinstance(self._player2, Player):
             raise GameNotStartedError()
-        elif slot < 0 or slot > self._width:
+        elif column < 0 or column > self._width:
             raise ValueError
-        self._lastSlot = slot
-        button = Button(slot, self._getFirstEmptyRow(slot))
+        self._lastSlot = column
+        row = self._getFirstEmptyRow(column)
+        button = Button(column, row)
         if self.playerInTurn() == self._player1:
             self._player1Drops.append(button)
+            self._checkEndConditions(self._player1, row, column)
         else:
             self._player2Drops.append(button)
+            self._checkEndConditions(self._player2, row, column)
+
+    def _checkEndConditions(self, player, row, column):
+        if len(self._player1Drops) + len(self._player2Drops) < 7:
+            return
+        elif len(self._player1Drops) + len(self._player2Drops) == self._width * self._height:
+            raise GameHasBeenEnded
+        elif Rules.check(player, row, column, map(lambda btn: (self._player1, btn), self._player1Drops) + map(lambda btn: (self._player2, btn), self._player2Drops)):
+            if player == self._player1:
+                raise Player1Wins
+            else:
+                raise Player2Wins
 
     def lastSlotWhereDropped(self):
         return self._lastSlot

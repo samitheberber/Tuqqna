@@ -40,4 +40,3 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestPlayerCreation))
     return suite
-

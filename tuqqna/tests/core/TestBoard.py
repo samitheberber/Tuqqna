@@ -10,6 +10,9 @@ import unittest
 from tuqqna.core.board import Board
 from tuqqna.core.player import Player
 from tuqqna.core.errors.game import GameNotStartedError
+from tuqqna.core.errors.game import GameHasBeenEnded
+from tuqqna.core.errors.game import Player1Wins
+from tuqqna.core.errors.game import Player2Wins
 from tuqqna.core.errors.board import NoMoreSlotsInBoard
 
 
@@ -90,7 +93,19 @@ class TestBoardIsReady(unittest.TestCase):
             self.fail("Game is now started")
 
 
-class TestBoardOnButtonDrop(unittest.TestCase):
+class TestBoardDropClass(unittest.TestCase):
+
+    def _repeatDrop(self, times, drop):
+        for i in xrange(times):
+            self.board.drop(drop)
+
+    def _repeatDrops(self, times, drop1, drop2):
+        for i in xrange(times):
+            self.board.drop(drop1)
+            self.board.drop(drop2)
+
+
+class TestBoardOnButtonDrop(TestBoardDropClass):
 
     def setUp(self):
         self.board = Board(7, 6)
@@ -111,7 +126,7 @@ class TestBoardOnButtonDrop(unittest.TestCase):
         self.assertEquals(self.board.lastSlotWhereDropped(), None)
 
 
-class TestBoardOnTurnOfPlayer(unittest.TestCase):
+class TestBoardOnTurnOfPlayer(TestBoardDropClass):
 
     def setUp(self):
         self.board = Board(7, 6)
@@ -126,12 +141,11 @@ class TestBoardOnTurnOfPlayer(unittest.TestCase):
         self.assertEquals(self.board.playerInTurn(), self.board.getPlayer2())
 
     def test_player1_is_after_player2(self):
-        self.board.drop(0)
-        self.board.drop(0)
+        self._repeatDrop(2, 0)
         self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
 
 
-class TestBoardOnFillButtons(unittest.TestCase):
+class TestBoardOnFillButtons(TestBoardDropClass):
 
     def setUp(self):
         self.board = Board(7, 6)
@@ -158,8 +172,7 @@ class TestBoardOnFillButtons(unittest.TestCase):
         self.assertEquals(str(self.board), boardString)
 
     def test_second_button_falls_on_top_of_first_one(self):
-        self.board.drop(0)
-        self.board.drop(0)
+        self._repeatDrop(2, 0)
         boardString = """\
 ---------------
 | | | | | | | |
@@ -178,12 +191,7 @@ class TestBoardOnFillButtons(unittest.TestCase):
         self.assertEquals(str(self.board), boardString)
 
     def test_drop_buttons_until_no_slots_in_column(self):
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
+        self._repeatDrop(6, 0)
         boardString = """\
 ---------------
 |X| | | | | | |
@@ -202,12 +210,7 @@ class TestBoardOnFillButtons(unittest.TestCase):
         self.assertEquals(str(self.board), boardString)
 
     def test_drop_buttons_over_the_slots_in_column(self):
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
-        self.board.drop(0)
+        self._repeatDrop(6, 0)
         self.assertRaises(NoMoreSlotsInBoard, self.board.drop, 0)
 
     def test_drop_buttons_in_every_column(self):
@@ -236,6 +239,40 @@ class TestBoardOnFillButtons(unittest.TestCase):
         self.assertEquals(str(self.board), boardString)
 
 
+class TestBoardEndConditions(TestBoardDropClass):
+
+    def setUp(self):
+        self.board = Board(7, 6)
+        self.board.setPlayer1(Player("Player 1"))
+        self.board.setPlayer2(Player("Player 2"))
+
+    def test_game_ends_draw(self):
+        self._repeatDrops(3, 0, 1)
+        self._repeatDrops(3, 2, 3)
+        self._repeatDrops(3, 4, 5)
+        self._repeatDrops(3, 6, 0)
+        self._repeatDrops(3, 1, 2)
+        self._repeatDrops(3, 3, 4)
+        self._repeatDrops(2, 5, 6)
+        self.board.drop(5)
+        self.assertRaises(GameHasBeenEnded, self.board.drop, 6)
+
+    def test_player1_wins(self):
+        self._repeatDrops(3, 0, 1)
+        self.assertRaises(Player1Wins, self.board.drop, 0)
+
+    def test_player2_wins(self):
+        self._repeatDrops(3, 0, 1)
+        self.board.drop(2)
+        self.assertRaises(Player2Wins, self.board.drop, 1)
+
+    def test_player1_wins_horizontal(self):
+        self._repeatDrop(2, 0)
+        self._repeatDrop(2, 1)
+        self._repeatDrop(2, 2)
+        self.assertRaises(Player1Wins, self.board.drop, 3)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
@@ -244,4 +281,5 @@ def suite():
     suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
     suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
     suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
+    suite.addTest(unittest.makeSuite(TestBoardEndConditions))
     return suite

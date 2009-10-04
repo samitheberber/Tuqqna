@@ -21,4 +21,3 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestButtonCreation))
     return suite
-
