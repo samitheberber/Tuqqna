@@ -273,6 +273,34 @@ class TestBoardEndConditions(TestBoardDropClass):
         self.assertRaises(Player1Wins, self.board.drop, 3)
 
 
+class TestBoardPlayerScores(TestBoardDropClass):
+
+    def setUp(self):
+        self.board = Board(7, 6)
+        self.board.setPlayer1(Player("Player 1"))
+        self.board.setPlayer2(Player("Player 2"))
+
+    def test_player1_has_no_wins_at_start(self):
+        self.assertEquals(self.board.getPlayer1().getVictories(), 0)
+
+    def test_player1_wins_once(self):
+        self._winPlayer1()
+        self.assertEquals(self.board.getPlayer1().getVictories(), 1)
+
+    def test_player1_wins_twice(self):
+        self._winPlayer1()
+        self.board.reset()
+        self._winPlayer1()
+        self.assertEquals(self.board.getPlayer1().getVictories(), 2)
+
+    def _winPlayer1(self):
+        try:
+            self._repeatDrops(3, 0, 1)
+            self.board.drop(0)
+        except Player1Wins:
+            return
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
@@ -282,4 +310,5 @@ def suite():
     suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
     suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
     suite.addTest(unittest.makeSuite(TestBoardEndConditions))
+    suite.addTest(unittest.makeSuite(TestBoardPlayerScores))
     return suite
