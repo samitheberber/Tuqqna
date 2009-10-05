@@ -9,8 +9,10 @@ To run tests, just run this file and you will see the result of tests.
 
 import unittest
 
-import tests
+from tuqqna import tests
 
+def main():
+    unittest.TextTestRunner(verbosity=2).run(tests.getTestSuites())
 
 if __name__ == "__main__":
-    unittest.TextTestRunner(verbosity=2).run(tests.getTestSuites())
+    main()

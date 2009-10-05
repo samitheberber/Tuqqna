@@ -3,3 +3,6 @@
 """
 This is main game file of Tuqqna.
 """
+
+def main():
+    pass

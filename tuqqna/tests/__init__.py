@@ -7,10 +7,10 @@ tuqqna.tests-package init file. This file contains all test suites.
 
 import unittest
 
-import ai
-import cli
-import core
-import gui
+from tuqqna.tests import ai
+from tuqqna.tests import cli
+from tuqqna.tests import core
+from tuqqna.tests import gui
 
 
 def getTestSuites():
