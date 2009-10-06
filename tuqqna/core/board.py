@@ -11,7 +11,7 @@ from tuqqna.core.errors.game import GameNotStartedError
 from tuqqna.core.errors.game import GameHasBeenEnded
 from tuqqna.core.errors.game import Player1Wins
 from tuqqna.core.errors.game import Player2Wins
-from tuqqna.core.errors.board import NoMoreSlotsInBoard
+from tuqqna.core.errors.board import NoMoreSlotsInColumn
 
 
 class Board(object):
@@ -22,6 +22,10 @@ class Board(object):
         self._player1 = None
         self._player2 = None
         self.reset()
+
+    def isReady(self):
+        return isinstance(self._player1, Player) and \
+               isinstance(self._player2, Player)
 
     def getWidth(self):
         return self._width
@@ -51,8 +55,7 @@ class Board(object):
         self._lastSlot = None
 
     def drop(self, column):
-        if not isinstance(self._player1, Player)\
-           or not isinstance(self._player2, Player):
+        if not self.isReady():
             raise GameNotStartedError()
         elif column < 0 or column > self._width:
             raise ValueError
@@ -73,7 +76,6 @@ class Board(object):
             raise GameHasBeenEnded
         elif Rules.check(player, row, column, map(lambda btn: (self._player1, btn), self._player1Drops) + map(lambda btn: (self._player2, btn), self._player2Drops)):
             if player == self._player1:
-                self._player1.wins()
                 raise Player1Wins
             else:
                 raise Player2Wins
@@ -101,7 +103,7 @@ class Board(object):
                 buttonsInSelectedColumn.sort()
                 firstEmpty = buttonsInSelectedColumn[0]-1
                 if firstEmpty < 0:
-                    raise NoMoreSlotsInBoard
+                    raise NoMoreSlotsInColumn
                 else:
                     return firstEmpty
 
