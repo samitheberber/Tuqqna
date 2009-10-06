@@ -13,7 +13,7 @@ from tuqqna.core.errors.game import GameNotStartedError
 from tuqqna.core.errors.game import GameHasBeenEnded
 from tuqqna.core.errors.game import Player1Wins
 from tuqqna.core.errors.game import Player2Wins
-from tuqqna.core.errors.board import NoMoreSlotsInBoard
+from tuqqna.core.errors.board import NoMoreSlotsInColumn
 
 
 class TestBoardConstruction(unittest.TestCase):
@@ -45,6 +45,12 @@ class TestBoardConstruction(unittest.TestCase):
 """
         self.assertEquals(str(self.board), boardString)
 
+    def test_board_is_not_ready(self):
+        self.assertFalse(self.board.isReady())
+
+    def test_board_is_not_ready_raises_error(self):
+        self.assertRaises(GameNotStartedError, self.board.drop, 0)
+
 
 class TestBoardPlayerAssign(unittest.TestCase):
 
@@ -68,31 +74,6 @@ class TestBoardPlayerAssign(unittest.TestCase):
         self.assertRaises(ValueError, self.board.setPlayer2, "Player 2")
 
 
-class TestBoardIsReady(unittest.TestCase):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-
-    def test_not_ready_when_no_players_is_set(self):
-        self.assertRaises(GameNotStartedError, self.board.drop, 1)
-
-    def test_not_ready_when_only_one_player_is_set_player1(self):
-        self.board.setPlayer1(Player("Player 1"))
-        self.assertRaises(GameNotStartedError, self.board.drop, 1)
-
-    def test_not_ready_when_no_players_is_set_player2(self):
-        self.board.setPlayer2(Player("Player 2"))
-        self.assertRaises(GameNotStartedError, self.board.drop, 1)
-
-    def test_is_ready_when_both_players_is_set(self):
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-        try:
-            self.board.drop(1)
-        except GameNotStartedError:
-            self.fail("Game is now started")
-
-
 class TestBoardDropClass(unittest.TestCase):
 
     def _repeatDrop(self, times, drop):
@@ -111,6 +92,9 @@ class TestBoardOnButtonDrop(TestBoardDropClass):
         self.board = Board(7, 6)
         self.board.setPlayer1(Player("Player 1"))
         self.board.setPlayer2(Player("Player 1"))
+
+    def test_board_is_ready(self):
+        self.assertTrue(self.board.isReady())
 
     def test_droppoint_is_below_zero(self):
         self.assertRaises(ValueError, self.board.drop, -1)
@@ -211,7 +195,7 @@ class TestBoardOnFillButtons(TestBoardDropClass):
 
     def test_drop_buttons_over_the_slots_in_column(self):
         self._repeatDrop(6, 0)
-        self.assertRaises(NoMoreSlotsInBoard, self.board.drop, 0)
+        self.assertRaises(NoMoreSlotsInColumn, self.board.drop, 0)
 
     def test_drop_buttons_in_every_column(self):
         self.board.drop(0)
@@ -273,42 +257,12 @@ class TestBoardEndConditions(TestBoardDropClass):
         self.assertRaises(Player1Wins, self.board.drop, 3)
 
 
-class TestBoardPlayerScores(TestBoardDropClass):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-
-    def test_player1_has_no_wins_at_start(self):
-        self.assertEquals(self.board.getPlayer1().getVictories(), 0)
-
-    def test_player1_wins_once(self):
-        self._winPlayer1()
-        self.assertEquals(self.board.getPlayer1().getVictories(), 1)
-
-    def test_player1_wins_twice(self):
-        self._winPlayer1()
-        self.board.reset()
-        self._winPlayer1()
-        self.assertEquals(self.board.getPlayer1().getVictories(), 2)
-
-    def _winPlayer1(self):
-        try:
-            self._repeatDrops(3, 0, 1)
-            self.board.drop(0)
-        except Player1Wins:
-            return
-
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
     suite.addTest(unittest.makeSuite(TestBoardPlayerAssign))
-    suite.addTest(unittest.makeSuite(TestBoardIsReady))
     suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
     suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
     suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
     suite.addTest(unittest.makeSuite(TestBoardEndConditions))
-    suite.addTest(unittest.makeSuite(TestBoardPlayerScores))
     return suite

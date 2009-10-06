@@ -11,3 +11,12 @@ class Player1Wins:
 
 class Player2Wins:
     pass
+
+class InvalidPlayerId:
+    pass
+
+class InvalidPlayerNumber:
+    pass
+
+class AtFirstStartNewGame:
+    pass

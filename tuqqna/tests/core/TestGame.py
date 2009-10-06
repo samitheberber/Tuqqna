@@ -10,6 +10,12 @@ import unittest
 from tuqqna.core.board import Board
 from tuqqna.core.game import Game
 from tuqqna.core.player import Player
+from tuqqna.core.errors.board import NoMoreSlotsInColumn
+from tuqqna.core.errors.game import InvalidPlayerId
+from tuqqna.core.errors.game import InvalidPlayerNumber
+from tuqqna.core.errors.game import Player1Wins
+from tuqqna.core.errors.game import Player2Wins
+from tuqqna.core.errors.game import AtFirstStartNewGame
 
 
 class TestGameCreation(unittest.TestCase):
@@ -17,10 +23,12 @@ class TestGameCreation(unittest.TestCase):
     def setUp(self):
         self.game = Game()
 
+    def test_get_game_string(self):
+        self.assertEquals(str(self.game), "")
+
     def test_create_the_game_with_board(self):
-        board = Board(7,6)
-        self.game.setBoard(board)
-        self.assertEquals(self.game.getBoard(), board)
+        self.game.setBoard(Board(7,6))
+        self.assertEquals(str(self.game), "")
 
     def test_add_new_player_in_game(self):
         player = Player("Test player")
@@ -39,8 +47,350 @@ class TestGameCreation(unittest.TestCase):
         except ValueError:
             self.fail("Not every player added in game.")
 
+    def test_set_player1(self):
+        self.game.setBoard(Board(7,6))
+        testPlayer1 = Player("Test Player 1")
+        testPlayer2 = Player("Test Player 2")
+        testPlayer3 = Player("Test Player 3")
+        self.game.addPlayer(testPlayer1)
+        self.game.addPlayer(testPlayer2)
+        self.game.addPlayer(testPlayer3)
+        self.game.changePlayer(1, 0)
+        self.assertEquals(self.game.getPlayer(1), testPlayer1)
+
+    def test_set_player1_to_invalid_player(self):
+        self.game.setBoard(Board(7,6))
+        testPlayer1 = Player("Test Player 1")
+        self.game.addPlayer(testPlayer1)
+        self.assertRaises(InvalidPlayerId, self.game.changePlayer, 1, 1)
+
+    def test_set_player2(self):
+        self.game.setBoard(Board(7,6))
+        testPlayer1 = Player("Test Player 1")
+        testPlayer2 = Player("Test Player 2")
+        testPlayer3 = Player("Test Player 3")
+        self.game.addPlayer(testPlayer1)
+        self.game.addPlayer(testPlayer2)
+        self.game.addPlayer(testPlayer3)
+        self.game.changePlayer(2, 0)
+        self.assertEquals(self.game.getPlayer(2), testPlayer1)
+
+    def test_set_player2_to_invalid_player(self):
+        self.game.setBoard(Board(7,6))
+        testPlayer1 = Player("Test Player 1")
+        self.game.addPlayer(testPlayer1)
+        self.assertRaises(InvalidPlayerId, self.game.changePlayer, 2, 1)
+
+    def test_set_invalid_player_number(self):
+        self.game.setBoard(Board(7,6))
+        testPlayer1 = Player("Test Player 1")
+        self.game.addPlayer(testPlayer1)
+        self.assertRaises(InvalidPlayerNumber, self.game.changePlayer, 0, 0)
+
+    def test_get_invalid_player_number(self):
+        self.game.setBoard(Board(7,6))
+        self.assertRaises(InvalidPlayerNumber, self.game.getPlayer, 0)
+
+
+class TestGameOnPlay(unittest.TestCase):
+
+    def setUp(self):
+        self.game = Game()
+        self.game.setBoard(Board(7,6))
+        self.game.addPlayer(Player("Test Player1"))
+        self.game.addPlayer(Player("Test Player2"))
+        self.game.changePlayer(1, 0)
+        self.game.changePlayer(2, 1)
+
+    def test_game_is_started(self):
+        self.assertTrue(self.game.isStarted())
+
+    def test_game_is_started_string(self):
+        gameString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+"""
+        self.assertEquals(str(self.game), gameString)
+
+    def test_player1_drops_on_left(self):
+        try:
+            self.game.drop(0)
+            gameString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+|O| | | | | | |
+---------------
+"""
+            self.assertEquals(str(self.game), gameString)
+        except:
+            self.fail("Error on first drop.")
+
+    def test_players_drop_on_left_to_full(self):
+        try:
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            gameString = """\
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+"""
+            self.assertEquals(str(self.game), gameString)
+        except:
+            self.fail("Error on dropping.")
+
+    def test_players_drop_on_left_to_over_full(self):
+        try:
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.fail("Error on dropping.")
+        except NoMoreSlotsInColumn:
+            gameString = """\
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|X| | | | | | |
+---------------
+|O| | | | | | |
+---------------
+"""
+            self.assertEquals(str(self.game), gameString)
+
+    def test_player1_wins(self):
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.fail("Error on player 1 winning.")
+        except Player1Wins:
+            gameString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+|O| | | | | | |
+---------------
+|O|X| | | | | |
+---------------
+|O|X| | | | | |
+---------------
+|O|X| | | | | |
+---------------
+"""
+            self.assertEquals(str(self.game), gameString)
+
+    def test_player2_wins(self):
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(2)
+            self.game.drop(1)
+            self.fail("Error on player 2 winning.")
+        except Player2Wins:
+            gameString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| |X| | | | | |
+---------------
+|O|X| | | | | |
+---------------
+|O|X| | | | | |
+---------------
+|O|X|O| | | | |
+---------------
+"""
+            self.assertEquals(str(self.game), gameString)
+
+
+class TestGamePlayerWinnings(unittest.TestCase):
+
+    def setUp(self):
+        self.game = Game()
+        self.game.setBoard(Board(7,6))
+        self.game.addPlayer(Player("Test Player1"))
+        self.game.addPlayer(Player("Test Player2"))
+        self.game.addPlayer(Player("Test Player3"))
+
+    def test_no_victories_at_start(self):
+        for player in self.game.getPlayers():
+            self.assertEquals(player.getVictories(), 0)
+            self.assertEquals(player.getDefeats(), 0)
+
+    def test_player1_has_one_victory_after_one_match(self):
+        self.game.changePlayer(1, 0)
+        self.game.changePlayer(2, 1)
+        self.assertEquals(self.game.getPlayer(1).getVictories(), 0)
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.fail("No winning :/")
+        except Player1Wins:
+            self.assertEquals(self.game.getPlayer(1).getVictories(), 1)
+            self.assertEquals(self.game.getPlayer(2).getDefeats(), 1)
+
+    def test_no_new_game_started(self):
+        self.game.changePlayer(1, 0)
+        self.game.changePlayer(2, 1)
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.fail("No winning :/")
+        except Player1Wins:
+            self.assertRaises(AtFirstStartNewGame, self.game.drop, 0)
+
+    def test_player1_has_two_victory_after_two_match(self):
+        self.game.changePlayer(1, 0)
+        self.game.changePlayer(2, 1)
+        self.assertEquals(self.game.getPlayer(1).getVictories(), 0)
+        self.assertEquals(self.game.getPlayer(2).getVictories(), 0)
+        self.assertEquals(self.game.getPlayer(1).getDefeats(), 0)
+        self.assertEquals(self.game.getPlayer(2).getDefeats(), 0)
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.fail("No winning :/")
+        except Player1Wins:
+            self.assertEquals(self.game.getPlayer(1).getVictories(), 1)
+            self.assertEquals(self.game.getPlayer(2).getVictories(), 0)
+            self.assertEquals(self.game.getPlayer(1).getDefeats(), 0)
+            self.assertEquals(self.game.getPlayer(2).getDefeats(), 1)
+            self.game.newGame()
+            try:
+                self.game.drop(0)
+                self.game.drop(1)
+                self.game.drop(0)
+                self.game.drop(1)
+                self.game.drop(0)
+                self.game.drop(1)
+                self.game.drop(0)
+                self.fail("No winning :/")
+            except Player1Wins:
+                self.assertEquals(self.game.getPlayer(1).getVictories(), 2)
+                self.assertEquals(self.game.getPlayer(2).getVictories(), 0)
+                self.assertEquals(self.game.getPlayer(1).getDefeats(), 0)
+                self.assertEquals(self.game.getPlayer(2).getDefeats(), 2)
+            except Player2Wins:
+                self.fail("Wrong Winner")
+        except Player2Wins:
+            self.fail("Wrong Winner")
+
+    def test_player1_wins_once_and_player_two_wins_once(self):
+        self.game.changePlayer(1, 0)
+        self.game.changePlayer(2, 1)
+        self.assertEquals(self.game.getPlayer(1).getVictories(), 0)
+        self.assertEquals(self.game.getPlayer(2).getVictories(), 0)
+        self.assertEquals(self.game.getPlayer(1).getDefeats(), 0)
+        self.assertEquals(self.game.getPlayer(2).getDefeats(), 0)
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(0)
+            self.fail("No winning :/")
+        except Player1Wins:
+            self.assertEquals(self.game.getPlayer(1).getVictories(), 1)
+            self.assertEquals(self.game.getPlayer(2).getVictories(), 0)
+            self.assertEquals(self.game.getPlayer(1).getDefeats(), 0)
+            self.assertEquals(self.game.getPlayer(2).getDefeats(), 1)
+            self.game.newGame()
+            try:
+                self.game.drop(0)
+                self.game.drop(1)
+                self.game.drop(0)
+                self.game.drop(1)
+                self.game.drop(0)
+                self.game.drop(1)
+                self.game.drop(2)
+                self.game.drop(1)
+                self.fail("No winning :/")
+            except Player2Wins:
+                self.assertEquals(self.game.getPlayer(1).getVictories(), 1)
+                self.assertEquals(self.game.getPlayer(2).getVictories(), 1)
+                self.assertEquals(self.game.getPlayer(1).getDefeats(), 1)
+                self.assertEquals(self.game.getPlayer(2).getDefeats(), 1)
+            except Player1Wins:
+                self.fail("Wrong Winner")
+        except Player2Wins:
+            self.fail("Wrong Winner")
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestGameCreation))
+    suite.addTest(unittest.makeSuite(TestGameOnPlay))
+    suite.addTest(unittest.makeSuite(TestGamePlayerWinnings))
     return suite
