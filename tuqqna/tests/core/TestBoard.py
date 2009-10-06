@@ -73,8 +73,15 @@ class TestBoardOnButtonDrop(TestBoardDropClass):
         self.board.drop(0)
         self.assertEquals(self.board.lastSlotWhereDropped(), 0)
 
-    def test_no_last_dropped_before_first_drop(self):
+    def test_no_last_dropped_on_column_before_first_drop(self):
         self.assertEquals(self.board.lastSlotWhereDropped(), None)
+
+    def test_is_dropped_in_correct_row(self):
+        self.board.drop(0)
+        self.assertEquals(self.board.lastRowtWhereLanded(), 5)
+
+    def test_no_last_dropped_on_row_before_first_drop(self):
+        self.assertEquals(self.board.lastRowtWhereLanded(), None)
 
 
 class TestBoardOnTurnOfPlayer(TestBoardDropClass):

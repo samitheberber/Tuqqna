@@ -78,6 +78,9 @@ class Game(object):
             self._isEnded = True
             raise Player2Wins
 
+    def getLast(self):
+        return (self._board.lastSlotWhereDropped(), self._board.lastRowtWhereLanded())
+
     def __str__(self):
         if self.isStarted():
             return str(self._board)

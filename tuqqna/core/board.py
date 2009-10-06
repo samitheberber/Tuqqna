@@ -31,12 +31,14 @@ class Board(object):
         self._player1Drops = []
         self._player2Drops = []
         self._lastSlot = None
+        self._lastRow = None
 
     def drop(self, column):
         if column < 0 or column > self._width:
             raise ValueError
         self._lastSlot = column
         row = self._getFirstEmptyRow(column)
+        self._lastRow = row
         button = Button(column, row)
         if self.playerInTurn() == 1:
             self._player1Drops.append(button)
@@ -57,6 +59,9 @@ class Board(object):
 
     def lastSlotWhereDropped(self):
         return self._lastSlot
+
+    def lastRowtWhereLanded(self):
+        return self._lastRow
 
     def playerInTurn(self):
         if len(self._player1Drops) == len(self._player2Drops):

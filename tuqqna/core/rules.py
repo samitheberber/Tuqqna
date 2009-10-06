@@ -60,13 +60,13 @@ class RulesAxis:
 class RulesHorizontal(RulesAxis):
 
     def check(cls, row, column, buttons):
-        buttons = map(lambda btn: btn.x(), 
-            filter(lambda btn: btn.y() == row, buttons))
+        buttons = map(lambda btn: btn.x(), filter(
+                    lambda btn: btn.y() == row, buttons))
         if len(buttons) < 4:
             return False
         return cls._checkLesserCount(column, filter(lambda x: x < column,
-            buttons)) + cls._checkGreaterCount(column,
-            filter(lambda x: x > column, buttons)) + 1 >= 4
+            buttons)) + cls._checkGreaterCount(column, filter(
+            lambda x: x > column, buttons)) + 1 >= 4
 
     check = classmethod(check)
 
@@ -88,7 +88,8 @@ class RulesCross:
 
     def check(cls, row, column, buttons):
         buttons = map(lambda btn: (btn.x(), btn.y()), 
-            filter(lambda btn: cls._isInCross(row, column, btn.x(), btn.y()), buttons))
+            filter(lambda btn: cls._isInCross(row, column, btn.x(), btn.y()),
+                buttons))
         if len(buttons) < 4:
             return False
         return cls._checkAscending(row, column, buttons) \
@@ -108,7 +109,10 @@ class RulesCross:
             return False
 
     def _checkAscending(cls, row, column, buttons):
-        return cls._checkLesserAscCount(row, column, filter(lambda (x, y): x < column and y < row, buttons)) + cls._checkGreaterAscCount(row, column, filter(lambda (x, y): x > column and y > row, buttons)) + 1 >= 4
+        return cls._checkLesserAscCount(row, column, filter(lambda (x, y): x <
+            column and y < row, buttons)) + cls._checkGreaterAscCount(row, 
+            column, filter(lambda (x, y): x > column and y > row, buttons)
+            ) + 1 >= 4
 
     def _checkLesserAscCount(cls, row, column, buttons):
         if len(buttons) == 0:
@@ -148,7 +152,10 @@ class RulesCross:
         return matches
 
     def _checkDescending(cls, row, column, buttons):
-        return cls._checkLesserDescCount(row, column, filter(lambda (x, y): x < column and y > row, buttons)) + cls._checkGreaterDescCount(row, column, filter(lambda (x, y): x > column and y < row, buttons)) + 1 >= 4
+        return cls._checkLesserDescCount(row, column, filter(lambda (x, y): x <
+            column and y > row, buttons)) + cls._checkGreaterDescCount(row, 
+            column, filter(lambda (x, y): x > column and y < row, buttons)
+            ) + 1 >= 4
 
     def _checkLesserDescCount(cls, row, column, buttons):
         if len(buttons) == 0:

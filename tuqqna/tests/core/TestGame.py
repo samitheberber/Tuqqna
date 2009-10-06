@@ -138,6 +138,13 @@ class TestGameOnPlay(unittest.TestCase):
         except:
             self.fail("Error on first drop.")
 
+    def test_player1_drops_on_left_coordinates(self):
+        try:
+            self.game.drop(0)
+            self.assertEquals(self.game.getLast(), (0, 5))
+        except:
+            self.fail("Error on first drop.")
+
     def test_players_drop_on_left_to_full(self):
         try:
             self.game.drop(0)
@@ -162,6 +169,18 @@ class TestGameOnPlay(unittest.TestCase):
 ---------------
 """
             self.assertEquals(str(self.game), gameString)
+        except:
+            self.fail("Error on dropping.")
+
+    def test_players_drop_on_left_to_full_coordinates(self):
+        try:
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.game.drop(0)
+            self.assertEquals(self.game.getLast(), (0, 0))
         except:
             self.fail("Error on dropping.")
 
