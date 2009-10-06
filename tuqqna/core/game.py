@@ -6,6 +6,7 @@ Game engine module. Handles the core game classes.
 
 
 from tuqqna.core.board import Board
+from tuqqna.core.player import Player
 from tuqqna.core.errors.game import InvalidPlayerId
 from tuqqna.core.errors.game import InvalidPlayerNumber
 from tuqqna.core.errors.game import Player1Wins
@@ -18,6 +19,8 @@ class Game(object):
     def __init__(self):
         self._board = None
         self._players = []
+        self._player1 = None
+        self._player2 = None
         self._isEnded = False
 
     def setBoard(self, board):
@@ -29,7 +32,9 @@ class Game(object):
             self._isEnded = False
 
     def addPlayer(self, player):
-        self._players.append(player)
+        if not isinstance(player, str):
+            raise ValueError
+        self._players.append(Player(player))
 
     def getPlayers(self):
         return self._players
@@ -37,9 +42,9 @@ class Game(object):
     def changePlayer(self, player, playerId):
         try:
             if player == 1:
-                self._board.setPlayer1(self._players[playerId])
+                self._player1 = self._players[playerId]
             elif player == 2:
-                self._board.setPlayer2(self._players[playerId])
+                self._player2 = self._players[playerId]
             else:
                 raise InvalidPlayerNumber
         except IndexError:
@@ -47,14 +52,14 @@ class Game(object):
 
     def getPlayer(self, player):
         if player == 1:
-            return self._board.getPlayer1()
+            return self._player1
         elif player == 2:
-            return self._board.getPlayer2()
+            return self._player2
         else:
             raise InvalidPlayerNumber
 
     def isStarted(self):
-        return isinstance(self._board, Board) and self._board.isReady()
+        return isinstance(self._board, Board) and isinstance(self._player1, Player) and isinstance(self._player2, Player)
 
     def drop(self, column):
         if self._isEnded:
@@ -63,13 +68,13 @@ class Game(object):
         try:
             self._board.drop(column)
         except Player1Wins:
-            self._board.getPlayer1().wins()
-            self._board.getPlayer2().defeats()
+            self._player1.wins()
+            self._player2.defeats()
             self._isEnded = True
             raise Player1Wins
         except Player2Wins:
-            self._board.getPlayer2().wins()
-            self._board.getPlayer1().defeats()
+            self._player2.wins()
+            self._player1.defeats()
             self._isEnded = True
             raise Player2Wins
 

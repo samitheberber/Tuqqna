@@ -16,10 +16,13 @@ from tuqqna.core.errors.game import Player2Wins
 from tuqqna.core.errors.board import NoMoreSlotsInColumn
 
 
-class TestBoardConstruction(unittest.TestCase):
+class BasicBoardTestCase(unittest.TestCase):
 
     def setUp(self):
         self.board = Board(7, 6)
+
+
+class TestBoardConstruction(BasicBoardTestCase):
 
     def test_board_width(self):
         self.assertEquals(self.board.getWidth(), 7)
@@ -45,36 +48,8 @@ class TestBoardConstruction(unittest.TestCase):
 """
         self.assertEquals(str(self.board), boardString)
 
-    def test_board_is_not_ready(self):
-        self.assertFalse(self.board.isReady())
 
-    def test_board_is_not_ready_raises_error(self):
-        self.assertRaises(GameNotStartedError, self.board.drop, 0)
-
-
-class TestBoardPlayerAssign(unittest.TestCase):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-
-    def test_set_player1_for_board(self):
-        player = Player("Player 1")
-        self.board.setPlayer1(player)
-        self.assertEquals(self.board.getPlayer1(), player)
-
-    def test_set_invalid_player1_for_board(self):
-        self.assertRaises(ValueError, self.board.setPlayer1, "Player 1")
-
-    def test_set_player2_for_board(self):
-        player = Player("Player 2")
-        self.board.setPlayer2(player)
-        self.assertEquals(self.board.getPlayer2(), player)
-
-    def test_set_invalid_player2_for_board(self):
-        self.assertRaises(ValueError, self.board.setPlayer2, "Player 2")
-
-
-class TestBoardDropClass(unittest.TestCase):
+class TestBoardDropClass(BasicBoardTestCase):
 
     def _repeatDrop(self, times, drop):
         for i in xrange(times):
@@ -87,14 +62,6 @@ class TestBoardDropClass(unittest.TestCase):
 
 
 class TestBoardOnButtonDrop(TestBoardDropClass):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 1"))
-
-    def test_board_is_ready(self):
-        self.assertTrue(self.board.isReady())
 
     def test_droppoint_is_below_zero(self):
         self.assertRaises(ValueError, self.board.drop, -1)
@@ -112,29 +79,19 @@ class TestBoardOnButtonDrop(TestBoardDropClass):
 
 class TestBoardOnTurnOfPlayer(TestBoardDropClass):
 
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-
     def test_player1_starts(self):
-        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
+        self.assertEquals(self.board.playerInTurn(), 1)
 
     def test_player2_is_after_player1(self):
         self.board.drop(0)
-        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer2())
+        self.assertEquals(self.board.playerInTurn(), 2)
 
     def test_player1_is_after_player2(self):
         self._repeatDrop(2, 0)
-        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
+        self.assertEquals(self.board.playerInTurn(), 1)
 
 
 class TestBoardOnFillButtons(TestBoardDropClass):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
 
     def test_first_button_falls_on_bottom(self):
         self.board.drop(0)
@@ -225,11 +182,6 @@ class TestBoardOnFillButtons(TestBoardDropClass):
 
 class TestBoardEndConditions(TestBoardDropClass):
 
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-
     def test_game_ends_draw(self):
         self._repeatDrops(3, 0, 1)
         self._repeatDrops(3, 2, 3)
@@ -260,7 +212,6 @@ class TestBoardEndConditions(TestBoardDropClass):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
-    suite.addTest(unittest.makeSuite(TestBoardPlayerAssign))
     suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
     suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
     suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))

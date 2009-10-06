@@ -31,16 +31,16 @@ class TestGameCreation(unittest.TestCase):
         self.assertEquals(str(self.game), "")
 
     def test_add_new_player_in_game(self):
-        player = Player("Test player")
+        player = "Test player"
         self.game.addPlayer(player)
-        self.assertTrue(player in self.game.getPlayers())
+        self.assertTrue(player in map(lambda x: x.getName(), self.game.getPlayers()))
 
     def test_add_few_more_players_in_game(self):
         try:
             for i in xrange(4):
-                player = Player("Player no. %i" % i)
+                player = "Player no. %i" % i
                 self.game.addPlayer(player)
-                if player in self.game.getPlayers():
+                if player in map(lambda x: x.getName(), self.game.getPlayers()):
                     continue
                 else:
                     raise ValueError
@@ -49,42 +49,35 @@ class TestGameCreation(unittest.TestCase):
 
     def test_set_player1(self):
         self.game.setBoard(Board(7,6))
-        testPlayer1 = Player("Test Player 1")
-        testPlayer2 = Player("Test Player 2")
-        testPlayer3 = Player("Test Player 3")
+        testPlayer1 = "Test Player 1"
         self.game.addPlayer(testPlayer1)
-        self.game.addPlayer(testPlayer2)
-        self.game.addPlayer(testPlayer3)
+        self.game.addPlayer("Test Player 2")
+        self.game.addPlayer("Test Player 3")
         self.game.changePlayer(1, 0)
-        self.assertEquals(self.game.getPlayer(1), testPlayer1)
+        self.assertEquals(self.game.getPlayer(1).getName(), testPlayer1)
 
     def test_set_player1_to_invalid_player(self):
         self.game.setBoard(Board(7,6))
-        testPlayer1 = Player("Test Player 1")
-        self.game.addPlayer(testPlayer1)
+        self.game.addPlayer("Test Player 1")
         self.assertRaises(InvalidPlayerId, self.game.changePlayer, 1, 1)
 
     def test_set_player2(self):
         self.game.setBoard(Board(7,6))
-        testPlayer1 = Player("Test Player 1")
-        testPlayer2 = Player("Test Player 2")
-        testPlayer3 = Player("Test Player 3")
+        testPlayer1 = "Test Player 1"
         self.game.addPlayer(testPlayer1)
-        self.game.addPlayer(testPlayer2)
-        self.game.addPlayer(testPlayer3)
+        self.game.addPlayer("Test Player 2")
+        self.game.addPlayer("Test Player 3")
         self.game.changePlayer(2, 0)
-        self.assertEquals(self.game.getPlayer(2), testPlayer1)
+        self.assertEquals(self.game.getPlayer(2).getName(), testPlayer1)
 
     def test_set_player2_to_invalid_player(self):
         self.game.setBoard(Board(7,6))
-        testPlayer1 = Player("Test Player 1")
-        self.game.addPlayer(testPlayer1)
+        self.game.addPlayer("Test Player 1")
         self.assertRaises(InvalidPlayerId, self.game.changePlayer, 2, 1)
 
     def test_set_invalid_player_number(self):
         self.game.setBoard(Board(7,6))
-        testPlayer1 = Player("Test Player 1")
-        self.game.addPlayer(testPlayer1)
+        self.game.addPlayer("Test Player 1")
         self.assertRaises(InvalidPlayerNumber, self.game.changePlayer, 0, 0)
 
     def test_get_invalid_player_number(self):
@@ -97,8 +90,8 @@ class TestGameOnPlay(unittest.TestCase):
     def setUp(self):
         self.game = Game()
         self.game.setBoard(Board(7,6))
-        self.game.addPlayer(Player("Test Player1"))
-        self.game.addPlayer(Player("Test Player2"))
+        self.game.addPlayer("Test Player1")
+        self.game.addPlayer("Test Player2")
         self.game.changePlayer(1, 0)
         self.game.changePlayer(2, 1)
 
@@ -263,9 +256,9 @@ class TestGamePlayerWinnings(unittest.TestCase):
     def setUp(self):
         self.game = Game()
         self.game.setBoard(Board(7,6))
-        self.game.addPlayer(Player("Test Player1"))
-        self.game.addPlayer(Player("Test Player2"))
-        self.game.addPlayer(Player("Test Player3"))
+        self.game.addPlayer("Test Player1")
+        self.game.addPlayer("Test Player2")
+        self.game.addPlayer("Test Player3")
 
     def test_no_victories_at_start(self):
         for player in self.game.getPlayers():

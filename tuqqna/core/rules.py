@@ -6,10 +6,10 @@ Game rules module.
 
 class Rules(object):
 
-    def check(cls, player, row, column, buttons):
-        return RulesHorizontal.check(player, row, column, buttons) \
-            or RulesVertical.check(player, row, column, buttons) \
-            or RulesCross.check(player, row, column, buttons)
+    def check(cls, row, column, buttons):
+        return RulesHorizontal.check(row, column, buttons) \
+            or RulesVertical.check(row, column, buttons) \
+            or RulesCross.check(row, column, buttons)
 
     check = classmethod(check)
 
@@ -59,9 +59,9 @@ class RulesAxis:
 
 class RulesHorizontal(RulesAxis):
 
-    def check(cls, player, row, column, buttons):
-        buttons = map(lambda (p, btn): btn.x(), 
-            filter(lambda (p, btn): btn.y() == row and p == player, buttons))
+    def check(cls, row, column, buttons):
+        buttons = map(lambda btn: btn.x(), 
+            filter(lambda btn: btn.y() == row, buttons))
         if len(buttons) < 4:
             return False
         return cls._checkLesserCount(column, filter(lambda x: x < column,
@@ -73,9 +73,9 @@ class RulesHorizontal(RulesAxis):
 
 class RulesVertical(RulesAxis):
 
-    def check(cls, player, row, column, buttons):
-        buttons = map(lambda (p, btn): btn.y(), 
-            filter(lambda (p, btn): btn.x() == column and p == player, buttons))
+    def check(cls, row, column, buttons):
+        buttons = map(lambda btn: btn.y(), 
+            filter(lambda btn: btn.x() == column, buttons))
         if len(buttons) < 4:
             return False
         return cls._checkGreaterCount(row, filter(lambda x: x > row,
@@ -86,9 +86,9 @@ class RulesVertical(RulesAxis):
 
 class RulesCross:
 
-    def check(cls, player, row, column, buttons):
-        buttons = map(lambda (p, btn): (btn.x(), btn.y()), 
-            filter(lambda (p, btn): cls._isInCross(row, column, btn.x(), btn.y()) and p == player, buttons))
+    def check(cls, row, column, buttons):
+        buttons = map(lambda btn: (btn.x(), btn.y()), 
+            filter(lambda btn: cls._isInCross(row, column, btn.x(), btn.y()), buttons))
         if len(buttons) < 4:
             return False
         return cls._checkAscending(row, column, buttons) \
