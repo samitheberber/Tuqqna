@@ -7,7 +7,6 @@ Test Game engine tests all game engine relevant matters.
 
 import unittest
 
-from tuqqna.core.board import Board
 from tuqqna.core.game import Game
 from tuqqna.core.player import Player
 from tuqqna.core.errors.board import NoMoreSlotsInColumn
@@ -27,7 +26,9 @@ class TestGameCreation(unittest.TestCase):
         self.assertEquals(str(self.game), "")
 
     def test_create_the_game_with_board(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
+        self.assertEquals(self.game.getWidth(), 7)
+        self.assertEquals(self.game.getHeight(), 6)
         self.assertEquals(str(self.game), "")
 
     def test_add_new_player_in_game(self):
@@ -48,7 +49,7 @@ class TestGameCreation(unittest.TestCase):
             self.fail("Not every player added in game.")
 
     def test_set_player1(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         testPlayer1 = "Test Player 1"
         self.game.addPlayer(testPlayer1)
         self.game.addPlayer("Test Player 2")
@@ -57,12 +58,12 @@ class TestGameCreation(unittest.TestCase):
         self.assertEquals(self.game.getPlayer(1).getName(), testPlayer1)
 
     def test_set_player1_to_invalid_player(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         self.game.addPlayer("Test Player 1")
         self.assertRaises(InvalidPlayerId, self.game.changePlayer, 1, 1)
 
     def test_set_player2(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         testPlayer1 = "Test Player 1"
         self.game.addPlayer(testPlayer1)
         self.game.addPlayer("Test Player 2")
@@ -71,17 +72,17 @@ class TestGameCreation(unittest.TestCase):
         self.assertEquals(self.game.getPlayer(2).getName(), testPlayer1)
 
     def test_set_player2_to_invalid_player(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         self.game.addPlayer("Test Player 1")
         self.assertRaises(InvalidPlayerId, self.game.changePlayer, 2, 1)
 
     def test_set_invalid_player_number(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         self.game.addPlayer("Test Player 1")
         self.assertRaises(InvalidPlayerNumber, self.game.changePlayer, 0, 0)
 
     def test_get_invalid_player_number(self):
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         self.assertRaises(InvalidPlayerNumber, self.game.getPlayer, 0)
 
 
@@ -89,7 +90,7 @@ class TestGameOnPlay(unittest.TestCase):
 
     def setUp(self):
         self.game = Game()
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         self.game.addPlayer("Test Player1")
         self.game.addPlayer("Test Player2")
         self.game.changePlayer(1, 0)
@@ -274,7 +275,7 @@ class TestGamePlayerWinnings(unittest.TestCase):
 
     def setUp(self):
         self.game = Game()
-        self.game.setBoard(Board(7,6))
+        self.game.setBoard(7,6)
         self.game.addPlayer("Test Player1")
         self.game.addPlayer("Test Player2")
         self.game.addPlayer("Test Player3")

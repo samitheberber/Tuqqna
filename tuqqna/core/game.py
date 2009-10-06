@@ -23,8 +23,20 @@ class Game(object):
         self._player2 = None
         self._isEnded = False
 
-    def setBoard(self, board):
-        self._board = board
+    def setBoard(self, width, height):
+        self._board = Board(width, height)
+
+    def getWidth(self):
+        if isinstance(self._board, Board):
+            return self._board.getWidth()
+        else:
+            return None
+
+    def getHeight(self):
+        if isinstance(self._board, Board):
+            return self._board.getHeight()
+        else:
+            return None
 
     def newGame(self):
         if isinstance(self._board, Board):
