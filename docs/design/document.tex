@@ -1,0 +1,130 @@
+\documentclass[gradu,emptyfirstpagenumber]{tktltiki}
+\usepackage{lmodern}
+\usepackage{url}
+\usepackage[dvips, bookmarks, colorlinks=false, pdftitle={Tuqqna - Connect Four
+game}, pdfauthor={Sami Saada}, pdfsubject={Design Document}, pdfkeywords={PDF,
+LaTeX, hyperlinks, hyperref}]{hyperref}
+
+\begin{document}
+
+\title{Tuqqna}
+\author{Sami Saada}
+\faculty{Faculty of Science}
+\department{Department of Computer Science}
+\level{Design Document}
+\subject{Programming in Python}
+\additionalinformation{Exercise group teacher is Lauri Alanko (lealanko)}
+\numberofpagesinformation{\numberofpages\ pages}
+\keywords{Python, Design document}
+
+\maketitle
+
+\begin{abstract}
+Design document of Tuqqna presents the design of Tuqqna, another implementation
+of Connect Four game. This document contains some information about the user
+interface, how it will be implemented. There is also section of components of
+project, which packages, modules and classes there will be.
+\end{abstract}
+
+\mytableofcontents
+
+\section{What is Tuqqna}
+
+Tuqqna is another implementation of Connect Four game, which is written in
+Python programming language. The name of Tuqqna comes from Kabyle word, which
+means connection. It will be fully tested, thanks to Test-Driven Development.
+The orginal reason to create Tuqqna is project for Programming in Python course.
+
+\subsection{What Kind of Game is Connect Four}
+
+Connect Four is well-known game, where two players drop buttons and try to
+connect four or more button in horizontal, vertical or diagonal lines. The basic
+Connect Four game board is 7x6, there are few variants of size. Tuqqna will be
+the basic 7x6, but that can be changed too.
+
+Longer and specific description is in Connect Four article in Wikipedia:
+\url{http://en.wikipedia.org/wiki/Connect_Four}
+
+\subsection{What's Different}
+
+The basic game mechanic is same as in most of implementations of Connect Four.
+Board looks same and rules are same. There is no high scores, but Tuqqna counts
+victories and losses of both players in each game session. This provides
+opportunity to organize Connect Four tournament with Tuqqna. Tuqqna has own
+Artificial Intelligence to play against human players. Of course human versus
+human is always an option.
+
+\pagebreak
+
+\section{User Interface}
+
+There will be two user interfaces in Tuqqna, one to use in command line and one
+for graphical environment.
+
+\subsection{Command line User Interface}
+
+Command line user interface in Tuqqna will contain two parts. The first part is
+for information output, like help file. The second part contains curses user
+interface. Curses will be very handy interface for a game like Tuqqna, it
+provides all the functionality that is needed.
+
+Curses is part of Python's standard library so it wont add more depencies. Many
+highly used command line application, like irssi, uses curses or ncurses, so it
+wont be bad choice. Curses contains lots of handy things like input areas and
+screen refreshing. Curses can also have mouse support, which isn't bad thing
+either.
+
+\subsection{Graphical User Interface}
+
+Graphical user interface in Tuqqna will be written with Tkinter. The reason of
+using Tkinter is that is de-facto standard GUI in python. Tuqqna will have
+graphical user interface, because it is the most common game interface in these
+days.
+
+\subsection{UI Information Description}
+
+Both of user interfaces contains lots of information. There can be selected
+players with names. Also an AI can be selected instead of another human player.
+UI will always show the current state of board. Player will always see all the
+things that it should see.
+
+\pagebreak
+
+\section{Components of Project}
+
+Tuqqna has lots of different kind of components.
+
+\subsection{Packages}
+
+Tuqqna will be build with nested packages. The main package is tuqqna and it has
+user interface packages, $core$ and $ai$ packages and unit tests.
+
+User interface packages, $cli$ and $gui$, contain all user interface specific
+modules.
+
+Game core package, $core$, contains all core modules of Tuqqna.
+
+Game artificial intelligence package, $ai$, contains all AI relevant modules.
+
+All unit tests are inside of $test$-package. That package has subpackage for
+each package of Tuqqna and those packages contains unit test for its relevant
+game package.
+
+\subsection{Modules}
+
+There is huge amount of modules in Tuqqna. Each module contains relevant
+class(es) for that module. Every main feature of game will have own module:
+board, player, rules, etc.
+
+\subsection{Classes}
+
+Tuqqna is created with object-oriented programming, so classes have very
+important part to play.
+
+All unit tests will be created in test case classes.
+
+\lastpage
+
+\end{document}
+
+\endinput

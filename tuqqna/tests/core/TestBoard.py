@@ -13,13 +13,16 @@ from tuqqna.core.errors.game import GameNotStartedError
 from tuqqna.core.errors.game import GameHasBeenEnded
 from tuqqna.core.errors.game import Player1Wins
 from tuqqna.core.errors.game import Player2Wins
-from tuqqna.core.errors.board import NoMoreSlotsInBoard
+from tuqqna.core.errors.board import NoMoreSlotsInColumn
 
 
-class TestBoardConstruction(unittest.TestCase):
+class BasicBoardTestCase(unittest.TestCase):
 
     def setUp(self):
         self.board = Board(7, 6)
+
+
+class TestBoardConstruction(BasicBoardTestCase):
 
     def test_board_width(self):
         self.assertEquals(self.board.getWidth(), 7)
@@ -46,54 +49,7 @@ class TestBoardConstruction(unittest.TestCase):
         self.assertEquals(str(self.board), boardString)
 
 
-class TestBoardPlayerAssign(unittest.TestCase):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-
-    def test_set_player1_for_board(self):
-        player = Player("Player 1")
-        self.board.setPlayer1(player)
-        self.assertEquals(self.board.getPlayer1(), player)
-
-    def test_set_invalid_player1_for_board(self):
-        self.assertRaises(ValueError, self.board.setPlayer1, "Player 1")
-
-    def test_set_player2_for_board(self):
-        player = Player("Player 2")
-        self.board.setPlayer2(player)
-        self.assertEquals(self.board.getPlayer2(), player)
-
-    def test_set_invalid_player2_for_board(self):
-        self.assertRaises(ValueError, self.board.setPlayer2, "Player 2")
-
-
-class TestBoardIsReady(unittest.TestCase):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-
-    def test_not_ready_when_no_players_is_set(self):
-        self.assertRaises(GameNotStartedError, self.board.drop, 1)
-
-    def test_not_ready_when_only_one_player_is_set_player1(self):
-        self.board.setPlayer1(Player("Player 1"))
-        self.assertRaises(GameNotStartedError, self.board.drop, 1)
-
-    def test_not_ready_when_no_players_is_set_player2(self):
-        self.board.setPlayer2(Player("Player 2"))
-        self.assertRaises(GameNotStartedError, self.board.drop, 1)
-
-    def test_is_ready_when_both_players_is_set(self):
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-        try:
-            self.board.drop(1)
-        except GameNotStartedError:
-            self.fail("Game is now started")
-
-
-class TestBoardDropClass(unittest.TestCase):
+class TestBoardDropClass(BasicBoardTestCase):
 
     def _repeatDrop(self, times, drop):
         for i in xrange(times):
@@ -107,11 +63,6 @@ class TestBoardDropClass(unittest.TestCase):
 
 class TestBoardOnButtonDrop(TestBoardDropClass):
 
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 1"))
-
     def test_droppoint_is_below_zero(self):
         self.assertRaises(ValueError, self.board.drop, -1)
 
@@ -122,35 +73,32 @@ class TestBoardOnButtonDrop(TestBoardDropClass):
         self.board.drop(0)
         self.assertEquals(self.board.lastSlotWhereDropped(), 0)
 
-    def test_no_last_dropped_before_first_drop(self):
+    def test_no_last_dropped_on_column_before_first_drop(self):
         self.assertEquals(self.board.lastSlotWhereDropped(), None)
+
+    def test_is_dropped_in_correct_row(self):
+        self.board.drop(0)
+        self.assertEquals(self.board.lastRowtWhereLanded(), 5)
+
+    def test_no_last_dropped_on_row_before_first_drop(self):
+        self.assertEquals(self.board.lastRowtWhereLanded(), None)
 
 
 class TestBoardOnTurnOfPlayer(TestBoardDropClass):
 
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-
     def test_player1_starts(self):
-        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
+        self.assertEquals(self.board.playerInTurn(), 1)
 
     def test_player2_is_after_player1(self):
         self.board.drop(0)
-        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer2())
+        self.assertEquals(self.board.playerInTurn(), 2)
 
     def test_player1_is_after_player2(self):
         self._repeatDrop(2, 0)
-        self.assertEquals(self.board.playerInTurn(), self.board.getPlayer1())
+        self.assertEquals(self.board.playerInTurn(), 1)
 
 
 class TestBoardOnFillButtons(TestBoardDropClass):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
 
     def test_first_button_falls_on_bottom(self):
         self.board.drop(0)
@@ -211,7 +159,7 @@ class TestBoardOnFillButtons(TestBoardDropClass):
 
     def test_drop_buttons_over_the_slots_in_column(self):
         self._repeatDrop(6, 0)
-        self.assertRaises(NoMoreSlotsInBoard, self.board.drop, 0)
+        self.assertRaises(NoMoreSlotsInColumn, self.board.drop, 0)
 
     def test_drop_buttons_in_every_column(self):
         self.board.drop(0)
@@ -241,11 +189,6 @@ class TestBoardOnFillButtons(TestBoardDropClass):
 
 class TestBoardEndConditions(TestBoardDropClass):
 
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-
     def test_game_ends_draw(self):
         self._repeatDrops(3, 0, 1)
         self._repeatDrops(3, 2, 3)
@@ -273,42 +216,11 @@ class TestBoardEndConditions(TestBoardDropClass):
         self.assertRaises(Player1Wins, self.board.drop, 3)
 
 
-class TestBoardPlayerScores(TestBoardDropClass):
-
-    def setUp(self):
-        self.board = Board(7, 6)
-        self.board.setPlayer1(Player("Player 1"))
-        self.board.setPlayer2(Player("Player 2"))
-
-    def test_player1_has_no_wins_at_start(self):
-        self.assertEquals(self.board.getPlayer1().getVictories(), 0)
-
-    def test_player1_wins_once(self):
-        self._winPlayer1()
-        self.assertEquals(self.board.getPlayer1().getVictories(), 1)
-
-    def test_player1_wins_twice(self):
-        self._winPlayer1()
-        self.board.reset()
-        self._winPlayer1()
-        self.assertEquals(self.board.getPlayer1().getVictories(), 2)
-
-    def _winPlayer1(self):
-        try:
-            self._repeatDrops(3, 0, 1)
-            self.board.drop(0)
-        except Player1Wins:
-            return
-
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestBoardConstruction))
-    suite.addTest(unittest.makeSuite(TestBoardPlayerAssign))
-    suite.addTest(unittest.makeSuite(TestBoardIsReady))
     suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
     suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
     suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
     suite.addTest(unittest.makeSuite(TestBoardEndConditions))
-    suite.addTest(unittest.makeSuite(TestBoardPlayerScores))
     return suite
