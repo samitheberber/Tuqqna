@@ -162,13 +162,8 @@ class TestBoardOnFillButtons(TestBoardDropClass):
         self.assertRaises(NoMoreSlotsInColumn, self.board.drop, 0)
 
     def test_drop_buttons_in_every_column(self):
-        self.board.drop(0)
-        self.board.drop(1)
-        self.board.drop(2)
-        self.board.drop(3)
-        self.board.drop(4)
-        self.board.drop(5)
-        self.board.drop(6)
+        for i in xrange(7):
+            self.board.drop(i)
         boardString = """\
 ---------------
 | | | | | | | |
@@ -210,9 +205,8 @@ class TestBoardEndConditions(TestBoardDropClass):
         self.assertRaises(Player2Wins, self.board.drop, 1)
 
     def test_player1_wins_horizontal(self):
-        self._repeatDrop(2, 0)
-        self._repeatDrop(2, 1)
-        self._repeatDrop(2, 2)
+        for i in xrange(3):
+            self._repeatDrop(2, i)
         self.assertRaises(Player1Wins, self.board.drop, 3)
 
 
