@@ -24,4 +24,7 @@ def main():
             print __doc__
             sys.exit(0)
         elif o in ("--cli"):
-            cliui.start()
+            try:
+                cliui.start()
+            except KeyboardInterrupt:
+                return

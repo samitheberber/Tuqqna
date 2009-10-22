@@ -5,32 +5,9 @@
 """
 
 import curses
-from curses import panel
+import sys
 
-
-def main(win):
-    stdscr = win
-    initUI(stdscr)
-
-    while True:
-        pass
-
-    quitUI(stdscr)
-
-
-def initTuqqna(stdscr):
-    name = "~ Tuqqna ~"
-    maxX = lambda (y,x): x
-    center = maxX(stdscr.getmaxyx())/2 - len(name)/2
-    stdscr.addstr(1, center, name)
-
-
-def initPlayers(stdscr):
-    pass
-
-
-def initGame(stdscr):
-    pass
+from tuqqna.cli.game import CliUIGameWindow
 
 
 def initUI(stdscr):
@@ -38,12 +15,10 @@ def initUI(stdscr):
     stdscr.keypad(1)
     curses.noecho()
     curses.cbreak()
-    stdscr.border(0)
-
-    initTuqqna(stdscr)
-
+    curses.curs_set(0)
+    stdscr.box()
+    stdscr.leaveok(0)
     stdscr.refresh()
-
 
 def quitUI(stdscr):
     curses.nocbreak()
@@ -51,6 +26,15 @@ def quitUI(stdscr):
     curses.echo()
     curses.endwin()
 
+def main(win):
+    stdscr = win
+    initUI(stdscr)
+    gameWindow = CliUIGameWindow(stdscr)
+    gameWindow.start()
+    quitUI(stdscr)
 
 def start():
+    sys.stderr.write('\x1b]0;%s\x07' % 'Tuqqna')
+    sys.stderr.flush()
+
     curses.wrapper(main)

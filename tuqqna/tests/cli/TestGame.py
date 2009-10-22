@@ -8,6 +8,7 @@ Test Game tests all game relevant cli ui matters.
 import unittest
 
 from tuqqna.cli.game import CliUIGame
+#from tuqqna.cli.game import CliUIGameWindow
 
 
 class CliUITestCase(unittest.TestCase):
@@ -20,6 +21,8 @@ class TestCliUIConstruction(CliUITestCase):
 
     def test_players(self):
         self.assertEquals(self.uigame.getPlayers(), [])
+        self.assertEquals(self.uigame.getPlayer1(), "(none)")
+        self.assertEquals(self.uigame.getPlayer2(), "(none)")
 
     def test_game_start_message(self):
         self.assertEquals(self.uigame.latestMessage(), "Game started.")
@@ -51,9 +54,11 @@ class TestPlayerAssign(CliUITestCase):
         self.uigame.player1("Player 1")
         self.assertEquals(self.uigame.latestMessage(), "Selected Player 1 "\
         "to player 1.")
+        self.assertEquals(self.uigame.getPlayer1(), "Player 1")
         self.uigame.player2("Player 2")
         self.assertEquals(self.uigame.latestMessage(), "Selected Player 2 "\
         "to player 2.")
+        self.assertEquals(self.uigame.getPlayer2(), "Player 2")
 
     def test_set_invalid_player_to_player1(self):
         self.uigame.player1("Player 1")
@@ -212,9 +217,19 @@ class TestGameplay(CliUITestCase):
         self.assertEquals(self.uigame.latestMessage(), "Game ends draw.")
 
 
+#class GameWindowData(unittest.TestCase):
+#
+#    def setUp(self):
+#        self.gamewin = CliUIGameWindow()
+#
+#    def test_test(self):
+#        pass
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCliUIConstruction))
     suite.addTest(unittest.makeSuite(TestPlayerAssign))
     suite.addTest(unittest.makeSuite(TestGameplay))
+#    suite.addTest(unittest.makeSuite(GameWindowData))
     return suite
