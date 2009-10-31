@@ -26,8 +26,7 @@ class CliUIGame(object):
         self._message = "Added %s." % name
 
     def getPlayers(self):
-        return ["%s (Victories: %s ; Defeats: %s)" % (p.getName(),
-            p.getVictories(), p.getDefeats()) for p in self._game.getPlayers()]
+        return [p.getName() for p in self._game.getPlayers()]
 
     def getPlayer1(self):
         player = self._game.getPlayer(1)
