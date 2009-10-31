@@ -29,17 +29,20 @@ class CliUIGame(object):
 
     def getPlayer1(self):
         player = self._game.getPlayer(1)
-        if player == None:
-            return "(none)"
-        else:
+        if player:
             return player.getName()
+        else:
+            return "(none)"
 
     def getPlayer2(self):
         player = self._game.getPlayer(2)
-        if player == None:
-            return "(none)"
-        else:
+        if player:
             return player.getName()
+        else:
+            return "(none)"
+
+    def hasPlayers(self):
+        return self._game.getPlayer(1) and self._game.getPlayer(2)
 
     def setBoard(self, width, height):
         self._game.setBoard(width, height)
@@ -140,6 +143,7 @@ class CliUIGameWindow(CliUIWindow):
         self._titleWindow = self._createTitleWindow()
         self._msgWindow = CliUIGameMsgWindow(stdscr)
         self._playerWindow = CliUIGamePlayerWindow(stdscr, self._game)
+        self._helpWindow = CliUIHelpWindow(stdscr)
 
     def _createTitleWindow(self):
         maxX = self._getMaxX()
@@ -153,6 +157,7 @@ class CliUIGameWindow(CliUIWindow):
         return win
 
     def start(self):
+        self._helpWindow.setHelpText('a: add player ; 1: set player 1 ; 2: set player 2')
         while True:
             try:
                 key = self._stdscr.getkey()
@@ -162,11 +167,15 @@ class CliUIGameWindow(CliUIWindow):
                 elif key == "1":
                     self._playerWindow.setPlayer1()
                     self._msgWindow.setMessage(self._game.latestMessage())
+                    self._checkStartCondition()
                 elif key == "2":
                     self._playerWindow.setPlayer2()
                     self._msgWindow.setMessage(self._game.latestMessage())
+                    self._checkStartCondition()
                 elif key == "a":
                     self._addNewPlayer()
+                elif key == "s" and self._playerWindow.checkReady():
+                    self.startGame()
                 elif key == "KEY_UP":
                     self._playerWindow.moveUp()
                 elif key == "KEY_DOWN":
@@ -178,11 +187,25 @@ class CliUIGameWindow(CliUIWindow):
 
     def _addNewPlayer(self):
         self._msgWindow.setMessage("Add new player: ")
-        curses.echo()
         self._game.addPlayer(self._msgWindow.getStr())
         self._msgWindow.setMessage(self._game.latestMessage())
         self._playerWindow.refresh()
-        curses.noecho()
+
+    def _checkStartCondition(self):
+        if self._playerWindow.checkReady():
+            self._helpWindow.setHelpText(
+                'a: add player ; 1: set player 1 ; 2: set player 2 ; s : start')
+
+    def startGame(self):
+        self._playerWindow.hide()
+        self._helpWindow.clear()
+        gameplayWindow = CliUIGameplayWindow(self._stdscr, self._game,
+                self._msgWindow, self._helpWindow)
+        gameplayWindow.play()
+        self._playerWindow.show()
+        self._msgWindow.setMessage(self._game.latestMessage())
+        self._helpWindow.setHelpText(
+            'a: add player ; 1: set player 1 ; 2: set player 2 ; s : start')
 
 
 class CliUIGameMsgWindow(CliUIWindow):
@@ -198,11 +221,34 @@ class CliUIGameMsgWindow(CliUIWindow):
         self._win.refresh()
 
     def getStr(self):
-        return self._win.getstr()
+        curses.echo()
+        value = self._win.getstr()
+        curses.noecho()
+        return value
 
     def clear(self):
         self._win.clear()
         self._win.refresh()
+
+
+class CliUIHelpWindow(CliUIWindow):
+
+    def __init__(self, stdscr):
+        self._stdscr = stdscr
+        self._win = self._stdscr.subwin(3, self._getMaxX()-2, self._getMaxY()-4, 1)
+        self._win.box()
+        self._win.refresh()
+
+    def setHelpText(self, text):
+        if len(text) > self._getMaxX()-4:
+            raise Error("Too small window.")
+        self.clear()
+        self._win.addstr(1, 1, text)
+        self._win.refresh()
+
+    def clear(self):
+        self._win.clear()
+        self._win.box()
 
 
 class CliUIGamePlayerWindow(CliUIWindow):
@@ -211,13 +257,21 @@ class CliUIGamePlayerWindow(CliUIWindow):
         self._stdscr = stdscr
         self._engine = engine
         windowWidth = self._getMaxX()-2
-        windowHeight = self._getMaxY()-3
+        windowHeight = self._getMaxY()-6
         self._win = stdscr.subwin(windowHeight, windowWidth, 2, 1)
+        self.show()
+        self._current = 0
+
+    def hide(self):
+        self._win.erase()
+        self._win.refresh()
+
+    def show(self):
+        pass
         self._win.box()
         self._addSelectedPlayers()
         self._addPlayers()
         self._win.refresh()
-        self._current = 0
 
     def _addSelectedPlayers(self):
         (winX, winY) = self._win.getmaxyx()
@@ -277,3 +331,46 @@ class CliUIGamePlayerWindow(CliUIWindow):
             return
         self._engine.player2(players[self._current])
         self.refresh()
+
+    def checkReady(self):
+        return self._engine.hasPlayers()
+
+
+class CliUIGameplayWindow(CliUIWindow):
+
+    def __init__(self, stdscr, engine, msg, help):
+        self._stdscr = stdscr
+        self._engine = engine
+        self._helpWindow = help
+        self._msgWindow = msg
+        windowWidth = self._getMaxX()-2
+        windowHeight = self._getMaxY()-6
+        self._win = stdscr.subwin(windowHeight, windowWidth, 2, 1)
+
+    def play(self):
+        self._setBoardSize()
+
+    def _setBoardSize(self):
+        width = None
+        while not width:
+            self._msgWindow.setMessage("Add board width: ")
+            widthstr = self._msgWindow.getStr()
+            try:
+                widthint = int(widthstr)
+                #TODO: add integer size check.
+                width = widthint
+            except:
+                pass
+
+        height = None
+        while not height:
+            self._msgWindow.setMessage("Add board height: ")
+            heightstr = self._msgWindow.getStr()
+            try:
+                heightint = int(heightstr)
+                #TODO: add integer size check.
+                height = heightint
+            except:
+                pass
+
+        self._engine.setBoard(width, height)
