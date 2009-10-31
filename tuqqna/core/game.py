@@ -11,6 +11,7 @@ from tuqqna.core.errors.game import InvalidPlayerId
 from tuqqna.core.errors.game import InvalidPlayerNumber
 from tuqqna.core.errors.game import Player1Wins
 from tuqqna.core.errors.game import Player2Wins
+from tuqqna.core.errors.game import GameHasBeenEnded
 from tuqqna.core.errors.game import AtFirstStartNewGame
 
 
@@ -23,8 +24,20 @@ class Game(object):
         self._player2 = None
         self._isEnded = False
 
-    def setBoard(self, board):
-        self._board = board
+    def setBoard(self, width, height):
+        self._board = Board(width, height)
+
+    def getWidth(self):
+        if isinstance(self._board, Board):
+            return self._board.getWidth()
+        else:
+            return None
+
+    def getHeight(self):
+        if isinstance(self._board, Board):
+            return self._board.getHeight()
+        else:
+            return None
 
     def newGame(self):
         if isinstance(self._board, Board):
@@ -59,7 +72,8 @@ class Game(object):
             raise InvalidPlayerNumber
 
     def isStarted(self):
-        return isinstance(self._board, Board) and isinstance(self._player1, Player) and isinstance(self._player2, Player)
+        return isinstance(self._board, Board) and isinstance(self._player1,
+            Player) and isinstance(self._player2, Player)
 
     def drop(self, column):
         if self._isEnded:
@@ -77,6 +91,9 @@ class Game(object):
             self._player1.defeats()
             self._isEnded = True
             raise Player2Wins
+        except GameHasBeenEnded:
+            self._isEnded = True
+            raise GameHasBeenEnded
 
     def getLast(self):
         return (self._board.lastSlotWhereDropped(), self._board.lastRowtWhereLanded())
