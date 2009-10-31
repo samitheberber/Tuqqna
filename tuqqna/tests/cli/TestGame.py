@@ -8,6 +8,9 @@ Test Game tests all game relevant cli ui matters.
 import unittest
 
 from tuqqna.cli.game import CliUIGame
+from tuqqna.core.errors.game import Player1Wins
+from tuqqna.core.errors.game import Player2Wins
+from tuqqna.core.errors.game import GameHasBeenEnded
 #from tuqqna.cli.game import CliUIGameWindow
 
 
@@ -151,7 +154,7 @@ class TestGameplay(CliUITestCase):
             self.uigame.moveCoinRight()
             self.uigame.dropCoin()
             self.uigame.moveCoinLeft()
-        self.uigame.dropCoin()
+        self.assertRaises(Player1Wins, self.uigame.dropCoin)
         self.assertEquals(self.uigame.latestMessage(), "Winner is Player 1.")
 
     def test_player2_wins(self):
@@ -167,7 +170,7 @@ class TestGameplay(CliUITestCase):
             self.uigame.moveCoinRight()
         self.uigame.dropCoin()
         self.uigame.moveCoinLeft()
-        self.uigame.dropCoin()
+        self.assertRaises(Player2Wins, self.uigame.dropCoin)
         self.assertEquals(self.uigame.latestMessage(), "Winner is Player 2.")
 
     def test_game_ends_draw(self):
@@ -199,7 +202,7 @@ class TestGameplay(CliUITestCase):
                 self.uigame.moveCoinLeft()
             self.uigame.dropCoin()
             self.assertEquals(self.uigame.coinLanded(), landes.pop(0))
-        for i in xrange(3):
+        for i in xrange(2):
             self.uigame.moveCoinRight()
             self.uigame.dropCoin()
             for j in xrange(2):
@@ -213,6 +216,19 @@ class TestGameplay(CliUITestCase):
             self.uigame.moveCoinRight()
             self.uigame.dropCoin()
             self.assertEquals(self.uigame.coinLanded(), landes.pop(0))
+        self.uigame.moveCoinRight()
+        self.uigame.dropCoin()
+        for j in xrange(2):
+            self.assertEquals(self.uigame.coinLanded(), landes.pop(0))
+            self.uigame.moveCoinRight()
+            self.uigame.dropCoin()
+            self.assertEquals(self.uigame.coinLanded(), landes.pop(0))
+            self.uigame.moveCoinLeft()
+            self.uigame.dropCoin()
+        self.assertEquals(self.uigame.coinLanded(), landes.pop(0))
+        self.uigame.moveCoinRight()
+        self.assertRaises(GameHasBeenEnded, self.uigame.dropCoin)
+        self.assertEquals(self.uigame.coinLanded(), landes.pop(0))
         self.assertEquals(landes, [])
         self.assertEquals(self.uigame.latestMessage(), "Game ends draw.")
 

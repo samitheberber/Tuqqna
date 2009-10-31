@@ -7,6 +7,7 @@
 import curses
 
 from tuqqna.core.game import Game
+from tuqqna.core.errors.board import NoMoreSlotsInColumn
 from tuqqna.core.errors.game import Player1Wins
 from tuqqna.core.errors.game import Player2Wins
 from tuqqna.core.errors.game import GameHasBeenEnded
@@ -112,10 +113,13 @@ class CliUIGame(object):
             self._message = ""
         except Player1Wins:
             self._message = "Winner is %s." % self._game.getPlayer(1)
+            raise Player1Wins
         except Player2Wins:
             self._message = "Winner is %s." % self._game.getPlayer(2)
+            raise Player2Wins
         except GameHasBeenEnded:
             self._message = "Game ends draw."
+            raise GameHasBeenEnded
 
     def coinLanded(self):
         return self._game.getLast()
@@ -186,8 +190,12 @@ class CliUIGameWindow(CliUIWindow):
                 return
 
     def _addNewPlayer(self):
-        self._msgWindow.setMessage("Add new player: ")
-        self._game.addPlayer(self._msgWindow.getStr())
+        name = None
+        while not name:
+            self._msgWindow.setMessage("Add new player: ")
+            name = self._msgWindow.getStr()
+        assert(name)
+        self._game.addPlayer(name)
         self._msgWindow.setMessage(self._game.latestMessage())
         self._playerWindow.refresh()
 
@@ -203,7 +211,6 @@ class CliUIGameWindow(CliUIWindow):
                 self._msgWindow, self._helpWindow)
         gameplayWindow.play()
         self._playerWindow.show()
-        self._msgWindow.setMessage(self._game.latestMessage())
         self._helpWindow.setHelpText(
             'a: add player ; 1: set player 1 ; 2: set player 2 ; s : start')
 
@@ -349,6 +356,14 @@ class CliUIGameplayWindow(CliUIWindow):
 
     def play(self):
         self._setBoardSize()
+        assert(self._engine.boardWidth() and self._engine.boardHeight() and
+                self._engine.isStarted())
+        self._gameLoop()
+        self._win.erase()
+        self._win.refresh()
+
+    def _updateMsg(self):
+        self._msgWindow.setMessage(self._engine.latestMessage())
 
     def _setBoardSize(self):
         width = None
@@ -374,3 +389,69 @@ class CliUIGameplayWindow(CliUIWindow):
                 pass
 
         self._engine.setBoard(width, height)
+
+    def _gameLoop(self):
+        self._drawBoard()
+        self._updateMsg()
+        while self._engine.isStarted():
+            key = self._stdscr.getkey()
+            self._msgWindow.clear()
+            if key == 'q':
+                return
+            elif key == "KEY_LEFT":
+                self._moveLeft()
+            elif key == "KEY_RIGHT":
+                self._moveRight()
+            elif key == " ":
+                try:
+                    self._drop()
+                except:
+                    return
+            else:
+                self._msgWindow.setMessage("Unknown key: " + key)
+
+    def _moveLeft(self):
+        self._engine.moveCoinLeft()
+        self._drawHeader()
+        self._win.refresh()
+        self._updateMsg()
+
+    def _moveRight(self):
+        self._engine.moveCoinRight()
+        self._drawHeader()
+        self._win.refresh()
+        self._updateMsg()
+
+    def _drop(self):
+        try:
+            self._engine.dropCoin()
+            self._updateMsg()
+            (x,y) = self._engine.coinLanded()
+            self._win.addch(2*y+2, 2*x+1, 'x')
+            self._win.refresh()
+        except NoMoreSlotsInColumn:
+            self._msgWindow.setMessage("The column is full.")
+
+    def _drawBoard(self):
+        width = self._engine.boardWidth()
+        height = self._engine.boardHeight()
+        self._drawHeader()
+        self._win.hline(1, 0, '-', 2*width+1)
+        row = '|'
+        for i in range(width):
+            row += ' |'
+        for i in [x*2 for x in range(height)]:
+            self._win.addstr(i+2, 0, row)
+            self._win.hline(i+3, 0, '-', 2*width+1)
+        self._win.refresh()
+
+    def _drawHeader(self):
+        coinPosition = self._engine.coinPosition()
+        width = self._engine.boardWidth()
+        header = ' '
+        for i in range(width):
+            if i == coinPosition:
+                header += 'O '
+            else:
+                header += '  '
+        self._win.addstr(0,0, header)
