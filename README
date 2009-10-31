@@ -8,10 +8,12 @@ What is this?
     course.
 
 
-Installing
+Running
 ==========
 
-    Instructions for installing this software are in INSTALL.
+    To play Connect Four with Tuqqna, just run it from ./run.py 
+
+    More information about running can get with --help option: ./run.py --help
 
 
 Unit Tests
@@ -28,7 +30,9 @@ Unit Tests
 Documentation and Support
 =========================
 
-    Coming later.
+    Documentation is written in LaTeX and transformed in PDF. Design document is
+    in ./docs/design/document.pdf and implementation document will be in
+    ./docs/implementation/document.pdf.
 
 
 Copyright
