@@ -133,12 +133,10 @@ class CliUIGame(object):
 class CliUIWindow(object):
 
     def _getMaxX(self):
-        getMaxX = lambda (_,x): x
-        return getMaxX(self._stdscr.getmaxyx())
+        return self._stdscr.getmaxyx()[1]
 
     def _getMaxY(self):
-        getMaxY = lambda (y,_): y
-        return getMaxY(self._stdscr.getmaxyx())
+        return self._stdscr.getmaxyx()[0]
 
 
 class CliUIGameWindow(CliUIWindow):

@@ -60,13 +60,12 @@ class RulesAxis:
 class RulesHorizontal(RulesAxis):
 
     def check(cls, row, column, buttons):
-        buttons = map(lambda btn: btn.x(), filter(
-                    lambda btn: btn.y() == row, buttons))
+        buttons = [btn.x() for btn in buttons if btn.y() == row]
         if len(buttons) < 4:
             return False
-        return cls._checkLesserCount(column, filter(lambda x: x < column,
-            buttons)) + cls._checkGreaterCount(column, filter(
-            lambda x: x > column, buttons)) + 1 >= 4
+        return cls._checkLesserCount(column, [btn for btn in buttons if btn <
+            column]) + cls._checkGreaterCount(column, [btn for btn in buttons if btn >
+            column]) + 1 >= 4
 
     check = classmethod(check)
 
@@ -74,12 +73,10 @@ class RulesHorizontal(RulesAxis):
 class RulesVertical(RulesAxis):
 
     def check(cls, row, column, buttons):
-        buttons = map(lambda btn: btn.y(), 
-            filter(lambda btn: btn.x() == column, buttons))
+        buttons = [btn.y() for btn in buttons if btn.x() == column]
         if len(buttons) < 4:
             return False
-        return cls._checkGreaterCount(row, filter(lambda x: x > row,
-            buttons)) + 1 >= 4
+        return cls._checkGreaterCount(row, [btn for btn in buttons if btn > row]) + 1 >= 4
 
     check = classmethod(check)
 
@@ -87,9 +84,8 @@ class RulesVertical(RulesAxis):
 class RulesCross:
 
     def check(cls, row, column, buttons):
-        buttons = map(lambda btn: (btn.x(), btn.y()), 
-            filter(lambda btn: cls._isInCross(row, column, btn.x(), btn.y()),
-                buttons))
+        buttons = [(btn.x(), btn.y()) for btn in buttons if cls._isInCross(row,
+            column, btn.x(), btn.y())]
         if len(buttons) < 4:
             return False
         return cls._checkAscending(row, column, buttons) \
@@ -109,9 +105,9 @@ class RulesCross:
             return False
 
     def _checkAscending(cls, row, column, buttons):
-        return cls._checkLesserAscCount(row, column, filter(lambda (x, y): x <
-            column and y < row, buttons)) + cls._checkGreaterAscCount(row, 
-            column, filter(lambda (x, y): x > column and y > row, buttons)
+        return cls._checkLesserAscCount(row, column, [btn for btn in buttons if
+            btn[0] < column and btn[1] < row]) + cls._checkGreaterAscCount(row, 
+            column, [btn for btn in buttons if btn[0] > column and btn[1] > row]
             ) + 1 >= 4
 
     def _checkLesserAscCount(cls, row, column, buttons):
@@ -152,9 +148,9 @@ class RulesCross:
         return matches
 
     def _checkDescending(cls, row, column, buttons):
-        return cls._checkLesserDescCount(row, column, filter(lambda (x, y): x <
-            column and y > row, buttons)) + cls._checkGreaterDescCount(row, 
-            column, filter(lambda (x, y): x > column and y < row, buttons)
+        return cls._checkLesserDescCount(row, column, [btn for btn in buttons if
+            btn[0] < column and btn[1] > row]) + cls._checkGreaterDescCount(row, 
+            column, [btn for btn in buttons if btn[0] > column and btn[1] < row]
             ) + 1 >= 4
 
     def _checkLesserDescCount(cls, row, column, buttons):

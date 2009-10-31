@@ -21,10 +21,17 @@ def main():
     # process options
     for o, a in opts:
         if o in ("-h", "--help"):
-            print __doc__
+            print help()
             sys.exit(0)
-        elif o in ("--cli"):
-            try:
-                cliui.start()
-            except KeyboardInterrupt:
-                return
+
+    try:
+        cliui.start()
+    except KeyboardInterrupt:
+        return
+
+def help():
+    return """\
+usage: ./run.py [option]
+Options and arguments:
+-h      : print this help message and exit (also --help)
+"""

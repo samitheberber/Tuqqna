@@ -73,9 +73,8 @@ class Board(object):
         if len(self._player1Drops) == 0 and len(self._player2Drops) == 0:
             return self._height-1
         else:
-            buttonsInSelectedColumn = map(lambda btn: btn.y() ,filter(
-                lambda btn: btn.x() == column,
-                self._player1Drops + self._player2Drops))
+            buttonsInSelectedColumn = [btn.y() for btn in self._player1Drops +
+                    self._player2Drops if btn.x() == column]
 
             if len(buttonsInSelectedColumn) == 0:
                 return self._height-1
@@ -94,15 +93,14 @@ class Board(object):
             stringFormat += "--"
         stringFormat += "-\n"
         for i in xrange(self._height):
-            stringFormat += self._slotRowToString(filter(
-                lambda (x, y, z): y == i
-                , buttonsInTuple))
+            stringFormat += self._slotRowToString([btuple for btuple in
+                buttonsInTuple if btuple[1] == i])
         return stringFormat
 
     def _slotRowToString(self, rowItems):
         string = ""
         for i in xrange(self._width):
-            matches = map(lambda (x, y, z): z, filter(lambda (x, y, z): x == i, rowItems))
+            matches = [item[2] for item in rowItems if item[0] == i]
             if len(matches) == 0:
                 string += "| "
             else:
