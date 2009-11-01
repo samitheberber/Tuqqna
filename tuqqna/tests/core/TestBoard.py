@@ -209,12 +209,25 @@ class TestBoardEndConditions(TestBoardDropClass):
             self._repeatDrop(2, i)
         self.assertRaises(Player1Wins, self.board.drop, 3)
 
+    def test_player1_wins_cross(self):
+        self.board.drop(0)
+        self.board.drop(1)
+        self.board.drop(2)
+        self.board.drop(3)
+        self.board.drop(1)
+        self.board.drop(2)
+        self.board.drop(3)
+        self.board.drop(3)
+        self.board.drop(2)
+        self.board.drop(1)
+        self.assertRaises(Player1Wins, self.board.drop, 3)
+
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestBoardConstruction))
-    suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
-    suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
-    suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
+    #suite.addTest(unittest.makeSuite(TestBoardConstruction))
+    #suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
+    #suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
+    #suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
     suite.addTest(unittest.makeSuite(TestBoardEndConditions))
     return suite

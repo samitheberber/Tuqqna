@@ -37,7 +37,8 @@ class CliUIGameplayWindow(CliUIWindow):
                 widthstr = 7
             try:
                 widthint = int(widthstr)
-                #TODO: add integer size check.
+                if widthint < 4:
+                    raise ValueError("Use better width.")
                 width = widthint
             except:
                 pass
@@ -50,7 +51,8 @@ class CliUIGameplayWindow(CliUIWindow):
                 heightstr = 6
             try:
                 heightint = int(heightstr)
-                #TODO: add integer size check.
+                if heightint < 4:
+                    raise ValueError("Use better height.")
                 height = heightint
             except:
                 pass

@@ -97,7 +97,7 @@ class RulesCross:
                 return True
             elif row == column and x == y and row-y == column-x:
                 return True
-            elif (column-x)/(row-y) == -1:
+            elif float(column-x)/float(row-y) == -1 or float(column-x)/float(row-y) == 1:
                 return True
             else:
                 return False

@@ -8,7 +8,6 @@ Test Rules tests all rules relevant matters.
 import unittest
 
 from tuqqna.core.button import Button
-from tuqqna.core.player import Player
 from tuqqna.core.rules import Rules
 from tuqqna.core.rules import RulesHorizontal
 from tuqqna.core.rules import RulesVertical
@@ -121,6 +120,11 @@ class TestRules(unittest.TestCase):
     def test_win_on_descending_cross_rule(self):
         buttons = [Button(0,3), Button(1,2), Button(2,1), Button(3,0)]
         self.assertTrue(Rules.check(1, 2, buttons))
+
+    def test_win_on_misc_cross_rule(self):
+        buttons = [Button(0,5), Button(2,5), Button(1,4), Button(3,4),
+                Button(2,3), Button(3,2)]
+        self.assertTrue(Rules.check(5, 0, buttons))
 
 
 def suite():

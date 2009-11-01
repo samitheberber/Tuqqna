@@ -277,6 +277,38 @@ class TestGameOnPlay(unittest.TestCase):
         except GameHasBeenEnded:
             pass
 
+    def test_one_end_case(self):
+        try:
+            self.game.drop(0)
+            self.game.drop(1)
+            self.game.drop(2)
+            self.game.drop(3)
+            self.game.drop(1)
+            self.game.drop(2)
+            self.game.drop(3)
+            self.game.drop(3)
+            self.game.drop(2)
+            self.game.drop(1)
+            self.game.drop(3)
+            self.fail("Error on player 2 winning.\n%s" % self.game)
+        except Player1Wins:
+            gameString = """\
+---------------
+| | | | | | | |
+---------------
+| | | | | | | |
+---------------
+| | | |O| | | |
+---------------
+| |X|O|X| | | |
+---------------
+| |O|X|O| | | |
+---------------
+|O|X|O|X| | | |
+---------------
+"""
+            self.assertEquals(str(self.game), gameString)
+
 
 class TestGamePlayerWinnings(unittest.TestCase):
 
