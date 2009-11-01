@@ -1,26 +1,69 @@
 \documentclass[gradu,emptyfirstpagenumber]{tktltiki}
-\usepackage{url}
 \usepackage{lmodern}
-\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage[dvips, bookmarks, colorlinks=false, pdftitle={Tuqqna - Connect Four
+game}, pdfauthor={Sami Saada}, pdfsubject={Implementation Document}, pdfkeywords={PDF,
+LaTeX, hyperlinks, hyperref}]{hyperref}
 
 \begin{document}
 
-\title{Tuqqna \\ Implementation document}
+\title{Tuqqna}
 \author{Sami Saada}
-\faculty{Matemaattis-luonnontieteellinen}
-\department{Tietojenkäsittelytieteen laitos}
-\level{Programming in Python}
-\additionalinformation{Programming in Python course project.}
+\faculty{Faculty of Science}
+\department{Department of Computer Science}
+\level{Implementation Document}
+\subject{Programming in Python}
+\additionalinformation{Teacher is Harri Hämäläinen}
 \numberofpagesinformation{\numberofpages\ pages}
-\keywords{Python, Design document}
+\keywords{Python, Implementation document}
 
 \maketitle
 
 \begin{abstract}
-Insert this later.
+This document tells implementation issues, about tests done, and the
+instructions for the user of your program.
 \end{abstract}
 
 \mytableofcontents
+
+\section{Implementation}
+
+Tuqqna is Connect Four game. It has basic package - module hierarchy. Packages
+are categorized. There is core package, which contains all core items, and cli
+package, which contains all cli ui items. gui and ai packages are ready for
+further developing.
+
+You can play connect four with your friends with Tuqqna, that all what is needed
+:)
+
+\pagebreak
+
+\section{Testing}
+
+Testing has been done with unittest-module. Every core element is fully tested,
+just because it is made by using TDD (Test Driven Development). Some UI elements
+are also tested with unit tests, but not those which contains mainly curses
+elements.
+
+Tuqqna is also tested by human use.
+
+\pagebreak
+
+\section{Instructions}
+
+User can play with Tuqqna just executing run.py -file.
+
+User can run tests in Tuqqna just executing unittests.py -file.
+
+Note: Do not resize terminal window during the game. Some elements will raise
+error if game window is too small.
+
+\pagebreak
+
+\section{Python 2to3 conversion}
+
+Every file in Tuqqna has been tested with $python -3$. The result is, that every
+module will work out of box in python 3.
 
 \lastpage
 \appendices

@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 
+"""\
+This module contains game message window.
+"""
+
 import curses
 
 from tuqqna.cli.window import CliUIWindow
 
 
 class CliUIGameMsgWindow(CliUIWindow):
+        """\
+Game message window.
+
+Methods are enough describing.
+"""
 
     def __init__(self, stdscr):
         self._stdscr = stdscr

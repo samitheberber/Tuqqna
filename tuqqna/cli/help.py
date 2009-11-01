@@ -1,9 +1,18 @@
 #!/usr/bin/env python
 
+"""\
+This module contains help window.
+"""
+
 from tuqqna.cli.window import CliUIWindow
 
 
 class CliUIHelpWindow(CliUIWindow):
+    """\
+Help window.
+
+Methods are enough describing.
+"""
 
     def __init__(self, stdscr):
         self._stdscr = stdscr

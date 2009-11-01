@@ -225,9 +225,9 @@ class TestBoardEndConditions(TestBoardDropClass):
 
 def suite():
     suite = unittest.TestSuite()
-    #suite.addTest(unittest.makeSuite(TestBoardConstruction))
-    #suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
-    #suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
-    #suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
+    suite.addTest(unittest.makeSuite(TestBoardConstruction))
+    suite.addTest(unittest.makeSuite(TestBoardOnButtonDrop))
+    suite.addTest(unittest.makeSuite(TestBoardOnTurnOfPlayer))
+    suite.addTest(unittest.makeSuite(TestBoardOnFillButtons))
     suite.addTest(unittest.makeSuite(TestBoardEndConditions))
     return suite

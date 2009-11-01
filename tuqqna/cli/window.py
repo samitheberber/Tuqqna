@@ -2,6 +2,9 @@
 
 
 class CliUIWindow(object):
+    """\
+This class tells, how to handle window size.
+"""
 
     def _getMaxX(self):
         return self._stdscr.getmaxyx()[1]

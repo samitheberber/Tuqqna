@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""\
+This module contains main game window.
+"""
+
 import curses
 
 from tuqqna.cli.window import CliUIWindow
@@ -11,6 +15,11 @@ from tuqqna.cli.gameplay import CliUIGameplayWindow
 
 
 class CliUIGameWindow(CliUIWindow):
+    """\
+Main game window class.
+
+Methods are enough describing.
+"""
 
     def __init__(self, stdscr):
         self._game = CliUIGame()

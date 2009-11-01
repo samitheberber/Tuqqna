@@ -12,6 +12,10 @@ from tuqqna.cli import cliui
 
 
 def main():
+    """\
+This is main game function, which handles arguments.
+"""
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help", "cli"])
     except getopt.error, msg:
@@ -30,6 +34,10 @@ def main():
         return
 
 def help():
+    """\
+This function returns help documentation.
+"""
+
     return """\
 usage: ./run.py [option]
 Options and arguments:

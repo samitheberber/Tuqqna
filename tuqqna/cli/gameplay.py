@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 
+"""\
+This module contains cli ui window for gameplay.
+"""
+
 import curses
 
 from tuqqna.cli.window import CliUIWindow
 
 
 class CliUIGameplayWindow(CliUIWindow):
+    """\
+Cli ui window for gameplay.
+
+Methods are enough describing.
+"""
 
     def __init__(self, stdscr, engine, msg, help):
         self._stdscr = stdscr

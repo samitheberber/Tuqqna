@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 
+"""\
+This module contains player window.
+"""
+
 import curses
 
 from tuqqna.cli.window import CliUIWindow
 
 
 class CliUIGamePlayerWindow(CliUIWindow):
+    """\
+Player window.
+"""
 
     def __init__(self, stdscr, engine):
         self._stdscr = stdscr

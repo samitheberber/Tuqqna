@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 """\
+This module contains game interface for cli ui.
 """
 
 
@@ -13,6 +14,11 @@ from tuqqna.core.errors.game import AtFirstStartNewGame
 
 
 class CliUIGame(object):
+    """\
+Game interface for cli ui.
+
+Method names are enough describing.
+"""
 
     def __init__(self):
         self._game = Game()
