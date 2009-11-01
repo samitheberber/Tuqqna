@@ -7,7 +7,7 @@
 import curses
 import sys
 
-from tuqqna.cli.game import CliUIGameWindow
+from tuqqna.cli.gamewin import CliUIGameWindow
 
 
 def initUI(stdscr):

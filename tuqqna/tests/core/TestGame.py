@@ -35,14 +35,14 @@ class TestGameCreation(unittest.TestCase):
     def test_add_new_player_in_game(self):
         player = "Test player"
         self.game.addPlayer(player)
-        self.assertTrue(player in map(lambda x: x.getName(), self.game.getPlayers()))
+        self.assertTrue(player in [p.getName() for p in self.game.getPlayers()])
 
     def test_add_few_more_players_in_game(self):
         try:
             for i in xrange(4):
                 player = "Player no. %i" % i
                 self.game.addPlayer(player)
-                if player in map(lambda x: x.getName(), self.game.getPlayers()):
+                if player in [p.getName() for p in self.game.getPlayers()]:
                     continue
                 else:
                     raise ValueError
