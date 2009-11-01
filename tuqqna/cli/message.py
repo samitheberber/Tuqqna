@@ -10,7 +10,7 @@ from tuqqna.cli.window import CliUIWindow
 
 
 class CliUIGameMsgWindow(CliUIWindow):
-        """\
+    """\
 Game message window.
 
 Methods are enough describing.
